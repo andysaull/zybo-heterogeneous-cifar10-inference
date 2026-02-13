@@ -1,0 +1,24 @@
+#-----------------------------------------------------------
+# Vivado v2025.2 (64-bit)
+# SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+# IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+# SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+# Start of session at: Mon Apr  6 21:55:16 2026
+# Process ID         : 13064
+# Current directory  : C:/Users/Andy/Documents/TFG/Project/2_comunicacion_AXI/2_comunicacion_AXI.runs/synth_1
+# Command line       : vivado.exe -log system_wrapper.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source system_wrapper.tcl
+# Log file           : C:/Users/Andy/Documents/TFG/Project/2_comunicacion_AXI/2_comunicacion_AXI.runs/synth_1/system_wrapper.vds
+# Journal file       : C:/Users/Andy/Documents/TFG/Project/2_comunicacion_AXI/2_comunicacion_AXI.runs/synth_1\vivado.jou
+# Running On         : DESKTOP-M77PRRA
+# Platform           : Windows Server 2016 or Windows 10
+# Operating System   : 19045
+# Processor Detail   : Intel(R) Celeron(R) N4020 CPU @ 1.10GHz
+# CPU Frequency      : 1094 MHz
+# CPU Physical cores : 2
+# CPU Logical cores  : 2
+# Host memory        : 8214 MB
+# Swap memory        : 4380 MB
+# Total Virtual      : 12594 MB
+# Available Virtual  : 2199 MB
+#-----------------------------------------------------------
+source system_wrapper.tcl -notrace
