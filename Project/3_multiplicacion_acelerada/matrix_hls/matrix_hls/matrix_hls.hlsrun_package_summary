@@ -1,0 +1,156 @@
+<ENTRY>
+{
+ "thisFile": "C:/Users\\Andy\\Documents\\TFG\\Project\\3_multiplicacion_acelerada\\matrix_hls\\matrix_hls\\matrix_hls.hlsrun_package_summary",
+ "connectId": "",
+ "serverToken": "",
+ "timestamp": "0"
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_CmdStep",
+ "dateTimestamp": "04/12/26 22:09:01",
+ "timestampMillis": "1776024541987",
+ "buildStep": {
+  "cmdId": "475af73b-2bfa-4856-bc95-5c92c9898751",
+  "name": "vitis-run",
+  "logFile": "C:/Users\\Andy\\Documents\\TFG\\Project\\3_multiplicacion_acelerada\\matrix_hls\\matrix_hls\\logs\\matrix_hls.steps.log",
+  "commandLine": "D:/2025.2/Vitis/bin/unwrapped/win64.o/vitis-run.exe  --mode hls --package --config C:\\Users\\Andy\\Documents\\TFG\\Project\\3_multiplicacion_acelerada\\matrix_hls\\hls_config.cfg --work_dir matrix_hls ",
+  "args": [
+   "--mode",
+   "hls",
+   "--package",
+   "--config",
+   "C:\\Users\\Andy\\Documents\\TFG\\Project\\3_multiplicacion_acelerada\\matrix_hls\\hls_config.cfg",
+   "--work_dir",
+   "matrix_hls"
+  ],
+  "iniFiles": [],
+  "cwd": "C:\\Users\\Andy\\Documents\\TFG\\Project\\3_multiplicacion_acelerada\\matrix_hls"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "04/12/26 22:09:01",
+ "timestampMillis": "1776024541988",
+ "status": {
+  "cmdId": "475af73b-2bfa-4856-bc95-5c92c9898751",
+  "state": "CS_RUNNING"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_FlowMetaData",
+ "dateTimestamp": "04/12/26 22:09:20",
+ "timestampMillis": "1776024560547",
+ "buildSummary": {
+  "hardwarePlatform": "",
+  "hardwareDsa": "",
+  "platformDirectory": "",
+  "runtime": "",
+  "systemConfig": "",
+  "flow": "BF_RUN",
+  "target": "TT_HLS_IP",
+  "kernels": [
+   {
+    "base": {
+     "type": "KERNEL",
+     "name": "matrix_mult",
+     "file": "C:/Users\\Andy\\Documents\\TFG\\Project\\3_multiplicacion_acelerada\\matrix_hls\\matrix_hls\\matrix_mult.zip",
+     "reports": [],
+     "uuid": ""
+    },
+    "sources": [
+     "C:/Users\\Andy\\Documents\\TFG\\Project\\3_multiplicacion_acelerada\\matrix_hls\\matrix_mult.cpp"
+    ],
+    "psSources": [],
+    "cuNames": [],
+    "type": "HLS",
+    "frequency": 0,
+    "freqUnits": ""
+   }
+  ],
+  "toolVersion": "2025.2"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_SubCmdStep",
+ "dateTimestamp": "04/12/26 22:09:20",
+ "timestampMillis": "1776024560551",
+ "buildStep": {
+  "cmdId": "30864f76-d253-4299-9324-3f7b246cd1fd",
+  "name": "",
+  "logFile": "C:/Users\\Andy\\Documents\\TFG\\Project\\3_multiplicacion_acelerada\\matrix_hls\\matrix_hls\\hls\\hls.log",
+  "commandLine": "",
+  "args": [],
+  "iniFiles": [],
+  "cwd": "C:\\Users\\Andy\\Documents\\TFG\\Project\\3_multiplicacion_acelerada\\matrix_hls"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "04/12/26 22:09:20",
+ "timestampMillis": "1776024560555",
+ "status": {
+  "cmdId": "30864f76-d253-4299-9324-3f7b246cd1fd",
+  "state": "CS_RUNNING"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "04/12/26 22:10:58",
+ "timestampMillis": "1776024658092",
+ "status": {
+  "cmdId": "30864f76-d253-4299-9324-3f7b246cd1fd",
+  "state": "CS_PASSED"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "04/12/26 22:10:58",
+ "timestampMillis": "1776024658667",
+ "status": {
+  "cmdId": "475af73b-2bfa-4856-bc95-5c92c9898751",
+  "state": "CS_PASSED"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "04/12/26 22:10:58",
+ "timestampMillis": "1776024658670",
+ "report": {
+  "path": "",
+  "name": "",
+  "fileType": "HTML",
+  "reportType": "GLOBAL_RULECHECK_GUIDANCE",
+  "cmdId": ""
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "04/12/26 22:10:58",
+ "timestampMillis": "1776024658671",
+ "report": {
+  "path": "",
+  "name": "",
+  "fileType": "BINARY_PROTOBUF",
+  "reportType": "GLOBAL_RULECHECK_GUIDANCE",
+  "cmdId": ""
+ }
+}
+</ENTRY>

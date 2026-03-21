@@ -1,0 +1,12 @@
+# Inferred from syn.compile.pipeline_loops=64
+set_directive_pipeline matrix_mult/VITIS_LOOP_24_2
+set_directive_pipeline matrix_mult/VITIS_LOOP_32_4
+set_directive_pipeline matrix_mult/VITIS_LOOP_53_9
+# Inferred from Performance Budgeter performance directives
+set_directive_loop_flatten matrix_mult/VITIS_LOOP_23_1
+set_directive_loop_flatten matrix_mult/VITIS_LOOP_31_3
+set_directive_loop_flatten matrix_mult/VITIS_LOOP_52_8
+# Inferred from performance & pipeline pragmas/directives
+set_directive_array_partition matrix_mult/A -dim=2 -type=complete A
+set_directive_array_partition matrix_mult/B -dim=1 -type=complete B
+set_directive_loop_flatten matrix_mult/VITIS_LOOP_39_5

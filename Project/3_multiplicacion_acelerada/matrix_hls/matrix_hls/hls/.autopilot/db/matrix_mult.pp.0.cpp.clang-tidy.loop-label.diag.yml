@@ -1,0 +1,160 @@
+---
+MainSourceFile:  'C:/Users/Andy/Documents/TFG/Project/3_multiplicacion_acelerada/matrix_hls/matrix_hls/hls/.autopilot/db/matrix_mult.pp.0.cpp'
+Diagnostics:
+  - DiagnosticName:  xilinx-label-all-loops
+    DiagnosticMessage:
+      Message:         'Added loop label VITIS_LOOP_676_1:  '
+      FilePath:        'D:\2025.2\Vitis\common\technology\autopilot\etc\ap_int_ref.h'
+      FileOffset:      676
+      Replacements:
+        - FilePath:        'C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp'
+          Offset:          279304
+          Length:          0
+          ReplacementText: 'VITIS_LOOP_676_1: '
+    Level:           Remark
+    BuildDirectory:  'C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls'
+  - DiagnosticName:  xilinx-label-all-loops
+    DiagnosticMessage:
+      Message:         'Added loop label VITIS_LOOP_690_1:  '
+      FilePath:        'D:\2025.2\Vitis\common\technology\autopilot\etc\ap_int_ref.h'
+      FileOffset:      690
+      Replacements:
+        - FilePath:        'C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp'
+          Offset:          279775
+          Length:          0
+          ReplacementText: 'VITIS_LOOP_690_1: '
+    Level:           Remark
+    BuildDirectory:  'C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls'
+  - DiagnosticName:  xilinx-label-all-loops
+    DiagnosticMessage:
+      Message:         'Added loop label VITIS_LOOP_704_1:  '
+      FilePath:        'D:\2025.2\Vitis\common\technology\autopilot\etc\ap_int_ref.h'
+      FileOffset:      704
+      Replacements:
+        - FilePath:        'C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp'
+          Offset:          280247
+          Length:          0
+          ReplacementText: 'VITIS_LOOP_704_1: '
+    Level:           Remark
+    BuildDirectory:  'C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls'
+  - DiagnosticName:  xilinx-label-all-loops
+    DiagnosticMessage:
+      Message:         'Added loop label VITIS_LOOP_1251_1:  '
+      FilePath:        'D:\2025.2\Vitis\common\technology\autopilot\etc\ap_fixed_base.h'
+      FileOffset:      1251
+      Replacements:
+        - FilePath:        'C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp'
+          Offset:          624818
+          Length:          0
+          ReplacementText: 'VITIS_LOOP_1251_1: '
+    Level:           Remark
+    BuildDirectory:  'C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls'
+  - DiagnosticName:  xilinx-label-all-loops
+    DiagnosticMessage:
+      Message:         'Added loop label VITIS_LOOP_23_1:  '
+      FilePath:        matrix_mult.cpp
+      FileOffset:      23
+      Replacements:
+        - FilePath:        'C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp'
+          Offset:          2226140
+          Length:          0
+          ReplacementText: 'VITIS_LOOP_23_1: '
+    Level:           Remark
+    BuildDirectory:  'C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls'
+  - DiagnosticName:  xilinx-label-all-loops
+    DiagnosticMessage:
+      Message:         'Added loop label VITIS_LOOP_24_2:  '
+      FilePath:        matrix_mult.cpp
+      FileOffset:      24
+      Replacements:
+        - FilePath:        'C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp'
+          Offset:          2226179
+          Length:          0
+          ReplacementText: 'VITIS_LOOP_24_2: '
+    Level:           Remark
+    BuildDirectory:  'C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls'
+  - DiagnosticName:  xilinx-label-all-loops
+    DiagnosticMessage:
+      Message:         'Added loop label VITIS_LOOP_31_3:  '
+      FilePath:        matrix_mult.cpp
+      FileOffset:      31
+      Replacements:
+        - FilePath:        'C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp'
+          Offset:          2226308
+          Length:          0
+          ReplacementText: 'VITIS_LOOP_31_3: '
+    Level:           Remark
+    BuildDirectory:  'C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls'
+  - DiagnosticName:  xilinx-label-all-loops
+    DiagnosticMessage:
+      Message:         'Added loop label VITIS_LOOP_32_4:  '
+      FilePath:        matrix_mult.cpp
+      FileOffset:      32
+      Replacements:
+        - FilePath:        'C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp'
+          Offset:          2226347
+          Length:          0
+          ReplacementText: 'VITIS_LOOP_32_4: '
+    Level:           Remark
+    BuildDirectory:  'C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls'
+  - DiagnosticName:  xilinx-label-all-loops
+    DiagnosticMessage:
+      Message:         'Added loop label VITIS_LOOP_39_5:  '
+      FilePath:        matrix_mult.cpp
+      FileOffset:      39
+      Replacements:
+        - FilePath:        'C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp'
+          Offset:          2226476
+          Length:          0
+          ReplacementText: 'VITIS_LOOP_39_5: '
+    Level:           Remark
+    BuildDirectory:  'C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls'
+  - DiagnosticName:  xilinx-label-all-loops
+    DiagnosticMessage:
+      Message:         'Added loop label VITIS_LOOP_40_6:  '
+      FilePath:        matrix_mult.cpp
+      FileOffset:      40
+      Replacements:
+        - FilePath:        'C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp'
+          Offset:          2226515
+          Length:          0
+          ReplacementText: 'VITIS_LOOP_40_6: '
+    Level:           Remark
+    BuildDirectory:  'C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls'
+  - DiagnosticName:  xilinx-label-all-loops
+    DiagnosticMessage:
+      Message:         'Added loop label VITIS_LOOP_43_7:  '
+      FilePath:        matrix_mult.cpp
+      FileOffset:      43
+      Replacements:
+        - FilePath:        'C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp'
+          Offset:          2226604
+          Length:          0
+          ReplacementText: 'VITIS_LOOP_43_7: '
+    Level:           Remark
+    BuildDirectory:  'C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls'
+  - DiagnosticName:  xilinx-label-all-loops
+    DiagnosticMessage:
+      Message:         'Added loop label VITIS_LOOP_52_8:  '
+      FilePath:        matrix_mult.cpp
+      FileOffset:      52
+      Replacements:
+        - FilePath:        'C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp'
+          Offset:          2226759
+          Length:          0
+          ReplacementText: 'VITIS_LOOP_52_8: '
+    Level:           Remark
+    BuildDirectory:  'C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls'
+  - DiagnosticName:  xilinx-label-all-loops
+    DiagnosticMessage:
+      Message:         'Added loop label VITIS_LOOP_53_9:  '
+      FilePath:        matrix_mult.cpp
+      FileOffset:      53
+      Replacements:
+        - FilePath:        'C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp'
+          Offset:          2226798
+          Length:          0
+          ReplacementText: 'VITIS_LOOP_53_9: '
+    Level:           Remark
+    BuildDirectory:  'C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls'
+...

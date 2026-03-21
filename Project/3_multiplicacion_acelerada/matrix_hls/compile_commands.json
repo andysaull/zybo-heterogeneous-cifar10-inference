@@ -1,0 +1,15 @@
+[
+  {
+    "directory": "C:\\Users\\Andy\\Documents\\TFG\\Project\\3_multiplicacion_acelerada\\matrix_hls",
+    "arguments": [
+      "D:\\2025.2\\Vitis\\win64\\tools\\vcxx\\libexec\\clang++.exe",
+      "--sysroot=D:\\2025.2\\Vitis\\tps\\mingw\\10.0.0\\win64.o\\nt",
+      "-fhls",
+      "-hls-syn-headers-dir=D:\\2025.2\\Vitis\\common\\technology\\autopilot",
+      "-fhlstoplevel=matrix_mult",
+      "-c",
+      "C:\\Users\\Andy\\Documents\\TFG\\Project\\3_multiplicacion_acelerada\\matrix_hls\\matrix_mult.cpp"
+    ],
+    "file": "C:\\Users\\Andy\\Documents\\TFG\\Project\\3_multiplicacion_acelerada\\matrix_hls\\matrix_mult.cpp"
+  }
+]

@@ -1,0 +1,65 @@
+C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp:2256:5: remark: Added loop label VITIS_LOOP_676_1:   [xilinx-label-all-loops]
+    for (unsigned i = low; i != high+1; ++i) {
+    ^
+    VITIS_LOOP_676_1: 
+C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp:2256:5: note: FIX-IT applied suggested code changes
+C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp:2270:5: remark: Added loop label VITIS_LOOP_690_1:   [xilinx-label-all-loops]
+    for (unsigned i = low; i != high+1; ++i) {
+    ^
+    VITIS_LOOP_690_1: 
+C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp:2270:5: note: FIX-IT applied suggested code changes
+C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp:2284:5: remark: Added loop label VITIS_LOOP_704_1:   [xilinx-label-all-loops]
+    for (unsigned i = low; i != high+1; ++i) {
+    ^
+    VITIS_LOOP_704_1: 
+C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp:2284:5: note: FIX-IT applied suggested code changes
+C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp:5804:7: remark: Added loop label VITIS_LOOP_1251_1:   [xilinx-label-all-loops]
+      for (i = 0; i < __N - 1; ++i) {
+      ^
+      VITIS_LOOP_1251_1: 
+C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp:5804:7: note: FIX-IT applied suggested code changes
+C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp:50026:5: remark: Added loop label VITIS_LOOP_23_1:   [xilinx-label-all-loops]
+    for (int i = 0; i < 32; i++) {
+    ^
+    VITIS_LOOP_23_1: 
+C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp:50026:5: note: FIX-IT applied suggested code changes
+C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp:50027:9: remark: Added loop label VITIS_LOOP_24_2:   [xilinx-label-all-loops]
+        for (int j = 0; j < 32; j++) {
+        ^
+        VITIS_LOOP_24_2: 
+C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp:50027:9: note: FIX-IT applied suggested code changes
+C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp:50034:5: remark: Added loop label VITIS_LOOP_31_3:   [xilinx-label-all-loops]
+    for (int i = 0; i < 32; i++) {
+    ^
+    VITIS_LOOP_31_3: 
+C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp:50034:5: note: FIX-IT applied suggested code changes
+C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp:50035:9: remark: Added loop label VITIS_LOOP_32_4:   [xilinx-label-all-loops]
+        for (int j = 0; j < 32; j++) {
+        ^
+        VITIS_LOOP_32_4: 
+C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp:50035:9: note: FIX-IT applied suggested code changes
+C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp:50042:5: remark: Added loop label VITIS_LOOP_39_5:   [xilinx-label-all-loops]
+    for (int i = 0; i < 32; i++) {
+    ^
+    VITIS_LOOP_39_5: 
+C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp:50042:5: note: FIX-IT applied suggested code changes
+C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp:50043:9: remark: Added loop label VITIS_LOOP_40_6:   [xilinx-label-all-loops]
+        for (int j = 0; j < 32; j++) {
+        ^
+        VITIS_LOOP_40_6: 
+C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp:50043:9: note: FIX-IT applied suggested code changes
+C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp:50046:13: remark: Added loop label VITIS_LOOP_43_7:   [xilinx-label-all-loops]
+            for (int k = 0; k < 32; k++) {
+            ^
+            VITIS_LOOP_43_7: 
+C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp:50046:13: note: FIX-IT applied suggested code changes
+C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp:50055:5: remark: Added loop label VITIS_LOOP_52_8:   [xilinx-label-all-loops]
+    for (int i = 0; i < 32; i++) {
+    ^
+    VITIS_LOOP_52_8: 
+C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp:50055:5: note: FIX-IT applied suggested code changes
+C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp:50056:9: remark: Added loop label VITIS_LOOP_53_9:   [xilinx-label-all-loops]
+        for (int j = 0; j < 32; j++) {
+        ^
+        VITIS_LOOP_53_9: 
+C:\Users\Andy\Documents\TFG\Project\3_multiplicacion_acelerada\matrix_hls\matrix_hls\hls\.autopilot\db\matrix_mult.pp.0.cpp:50056:9: note: FIX-IT applied suggested code changes
