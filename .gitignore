@@ -1,0 +1,10 @@
+# Vivado generated
+.rigel_lopper/
+_ide/
+*.cache/
+*.gen/
+*.hw/
+*.ip_user_files/
+*.runs/
+*.sim/
+
