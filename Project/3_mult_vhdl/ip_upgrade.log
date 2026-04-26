@@ -1,0 +1,58 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Sat Apr 25 21:08:39 2026
+| Host         : DESKTOP-M77PRRA running 64-bit major release  (build 9200)
+| Command      : upgrade_ip
+| Device       : xc7z010clg400-1
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Upgrade Log for IP 'design_1_matrix_mult_parallel_0_0'
+
+1. Summary
+----------
+
+SUCCESS in the update of design_1_matrix_mult_parallel_0_0 (xilinx.com:user:matrix_mult_parallel_fixed:1.0 (Rev. 2)) to current project options.
+
+
+
+
+
+
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Sat Apr 25 21:00:06 2026
+| Host         : DESKTOP-M77PRRA running 64-bit major release  (build 9200)
+| Command      : upgrade_ip
+| Device       : xc7z010clg400-1
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Upgrade Log for IP 'design_1_matrix_mult_parallel_0_0'
+
+1. Summary
+----------
+
+SUCCESS in the update of design_1_matrix_mult_parallel_0_0 (xilinx.com:user:matrix_mult_parallel_fixed:1.0 (Rev. 2)) to current project options.
+
+
+
+
+
+
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Sat Apr 25 20:54:48 2026
+| Host         : DESKTOP-M77PRRA running 64-bit major release  (build 9200)
+| Command      : upgrade_ip
+| Device       : xc7z010clg400-1
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Upgrade Log for IP 'design_1_matrix_mult_parallel_0_0'
+
+1. Summary
+----------
+
+SUCCESS in the update of design_1_matrix_mult_parallel_0_0 (xilinx.com:user:matrix_mult_parallel_fixed:1.0 (Rev. 2)) to current project options.
+

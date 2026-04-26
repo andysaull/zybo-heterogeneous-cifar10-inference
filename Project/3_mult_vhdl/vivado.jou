@@ -1,0 +1,27 @@
+#-----------------------------------------------------------
+# Vivado v2025.2 (64-bit)
+# SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+# IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+# SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+# Start of session at: Fri May  8 19:44:32 2026
+# Process ID         : 28200
+# Current directory  : E:/Andy/COLEGIO/Ingenieria_de_Software/TFG/Project/3_mult_vhdl
+# Command line       : vivado.exe -gui_launcher_event rodinguilauncherevent28068 E:\Andy\COLEGIO\Ingenieria_de_Software\TFG\Project\3_mult_vhdl\3_mult_vhdl.xpr
+# Log file           : E:/Andy/COLEGIO/Ingenieria_de_Software/TFG/Project/3_mult_vhdl/vivado.log
+# Journal file       : E:/Andy/COLEGIO/Ingenieria_de_Software/TFG/Project/3_mult_vhdl\vivado.jou
+# Running On         : MasterRace-Andy
+# Platform           : Windows Server 2016 or Windows 10
+# Operating System   : 26200
+# Processor Detail   : AMD Ryzen 9 7900X3D 12-Core Processor          
+# CPU Frequency      : 4392 MHz
+# CPU Physical cores : 12
+# CPU Logical cores  : 24
+# Host memory        : 33436 MB
+# Swap memory        : 5637 MB
+# Total Virtual      : 39073 MB
+# Available Virtual  : 9712 MB
+#-----------------------------------------------------------
+start_gui
+open_project E:/Andy/COLEGIO/Ingenieria_de_Software/TFG/Project/3_mult_vhdl/3_mult_vhdl.xpr
+update_compile_order -fileset sources_1
+open_bd_design {E:/Andy/COLEGIO/Ingenieria_de_Software/TFG/Project/3_mult_vhdl/3_mult_vhdl.srcs/sources_1/bd/design_1/design_1.bd}
