@@ -8,8 +8,8 @@ HLS4ML_ROOT = Path(__file__).resolve().parents[2]
 TRAIN_MODELS_DIR = HLS4ML_ROOT / "train_models"
 HLS_PROJECTS_DIR = HLS4ML_ROOT / "hls_projects"
 
-MODEL_FILE = TRAIN_MODELS_DIR / "modelo_cifar10_zybo_float_REDUX.h5"
-OUT_DIR = HLS_PROJECTS_DIR / "cifar10_redux"
+MODEL_FILE = TRAIN_MODELS_DIR / "modelo_cifar10_zybo_float_MID_v2.h5"
+OUT_DIR = HLS_PROJECTS_DIR / "cifar10_mid_v2_resource"
 
 CORE_NAME = "cifar10_hls_core"
 WRAPPER_NAME = "cifar10_axis_wrapper"
@@ -19,7 +19,7 @@ INPUT_ELEMS = 32 * 32 * 3
 OUTPUT_ELEMS = 10
 AXIS_WIDTH = 32
 
-MODEL_PRECISION = "ap_fixed<8,3>"
+MODEL_PRECISION = "ap_fixed<10,4>"
 OUTPUT_PRECISION = "ap_fixed<32,16>"
 MODEL_REUSE_FACTOR = 2048
 MODEL_BRAM_FACTOR = 1000000
@@ -203,7 +203,7 @@ exit
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Convert REDUX to HLS with an AXI DMA wrapper.")
+    parser = argparse.ArgumentParser(description="Convert MID_v2 with the resource-oriented HLS profile.")
     parser.add_argument("--model-file", default=MODEL_FILE)
     parser.add_argument("--out-dir", default=str(OUT_DIR))
     return parser.parse_args()
@@ -218,7 +218,6 @@ def build_config(model):
     config["Model"]["FIFO_opt"] = 1
     config["Model"]["BramFactor"] = MODEL_BRAM_FACTOR
 
-    # The wrapper owns the AXI DMA protocol; hls4ml only generates the stream core.
     output_layer_name = model.layers[-1].name
     config.setdefault("LayerName", {})[output_layer_name] = {"Precision": OUTPUT_PRECISION}
 
