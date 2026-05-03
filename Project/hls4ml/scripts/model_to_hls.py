@@ -319,50 +319,21 @@ def print_hls_success(out_dir: Path):
 tf, hls4ml = import_hls_dependencies()
 
 MODEL_FILE = TRAIN_MODELS_DIR / "modelo_cifar10_zybo_float_MID_v3.h5"
-OUT_DIR = HLS_PROJECTS_DIR / "cifar10_mid_v3_fit"
+OUT_DIR = HLS_PROJECTS_DIR / "cifar10_mid_v3_gap_safe"
 
-# Keep wrapper FIFOs small to avoid spending BRAM on buffering.
-NN_IN_DEPTH = 16
-NN_OUT_DEPTH = 2
-
-# Internal precision tuned to fit the Z-7010 while keeping six fractional bits.
+# Keep the profile that fit on Zybo and adjust only the numerically risky tail.
 MODEL_PRECISION = "ap_fixed<9,3>"
 
-# The AXI wrapper still exposes Q16.16, so the internal result type can stay narrow.
-OUTPUT_PRECISION = "ap_fixed<14,5>"
+# GAP accumulates a 4x4 map before averaging, so the output needs extra range.
+OUTPUT_PRECISION = "ap_fixed<14,5,AP_TRN,AP_SAT>"
+GAP_ACCUM_PRECISION = "ap_fixed<18,9,AP_TRN,AP_SAT>"
 
-# High reuse reduces logic at the cost of latency.
 MODEL_REUSE_FACTOR = 4096
 
 
-def parse_args():
-    parser = argparse.ArgumentParser(description="Convert the MID_v3 model into a Zybo-ready HLS project.")
-    parser.add_argument("--model-file", default=MODEL_FILE)
-    parser.add_argument("--out-dir", default=str(OUT_DIR))
-    parser.add_argument("--precision", default=MODEL_PRECISION)
-    parser.add_argument("--output-precision", default=OUTPUT_PRECISION)
-    parser.add_argument("--reuse-factor", type=int, default=MODEL_REUSE_FACTOR)
-    parser.add_argument(
-        "--force-dsp-mult",
-        action="store_true",
-        help="Patch nnet_mult.h to prefer DSP-backed multipliers.",
-    )
-    return parser.parse_args()
-
-
-def main():
-    args = parse_args()
-    model_file = args.model_file
-    out_dir = Path(args.out_dir).resolve()
-
-    model = tf.keras.models.load_model(model_file, compile=False)
-
-    output_layer_name = model.layers[-1].name
-
-    config = hls4ml.utils.config_from_keras_model(model, granularity="Model")
-
-    config["Model"]["Precision"] = args.precision
-    config["Model"]["ReuseFactor"] = args.reuse_factor
+def set_output_precision(config):
+    config["Model"]["Precision"] = MODEL_PRECISION
+    config["Model"]["ReuseFactor"] = MODEL_REUSE_FACTOR
     config["Model"]["Strategy"] = "Resource"
     config["Model"]["FIFO_opt"] = 1
     config["Model"]["BramFactor"] = 1000000
@@ -370,9 +341,38 @@ def main():
     if "LayerName" not in config:
         config["LayerName"] = {}
 
-    config["LayerName"][output_layer_name] = {
-        "Precision": args.output_precision,
-    }
+    output_cfg = config["LayerName"].setdefault("output", {})
+    precision = output_cfg.setdefault("Precision", {})
+    if not isinstance(precision, dict):
+        precision = {}
+        output_cfg["Precision"] = precision
+
+    precision["result"] = OUTPUT_PRECISION
+    precision["accum"] = GAP_ACCUM_PRECISION
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Convert MID_v3 to HLS while widening only the GlobalAveragePooling output."
+    )
+    parser.add_argument("--model-file", default=MODEL_FILE)
+    parser.add_argument("--out-dir", default=str(OUT_DIR))
+    parser.add_argument(
+        "--no-force-dsp-mult",
+        action="store_true",
+        help="Do not patch nnet_mult.h. By default, multipliers are mapped toward DSPs.",
+    )
+    return parser.parse_args()
+
+
+def main():
+    args = parse_args()
+    out_dir = Path(args.out_dir)
+
+    model = tf.keras.models.load_model(args.model_file, compile=False)
+
+    config = hls4ml.utils.config_from_keras_model(model, granularity="Model")
+    set_output_precision(config)
 
     hls_model = hls4ml.converters.convert_from_keras_model(
         model,
@@ -381,27 +381,19 @@ def main():
         project_name=CORE_NAME,
         part=PART,
         io_type="io_stream",
-        backend="Vivado",
+        backend="Vitis",
     )
 
     hls_model.write()
 
-    if args.force_dsp_mult:
+    if args.no_force_dsp_mult:
+        print("DSP multiplier patch skipped by --no-force-dsp-mult.")
+    else:
         patch_generated_mult_to_dsp(out_dir)
 
-    create_axis_wrapper(
-        out_dir=out_dir,
-        core_name=CORE_NAME,
-        wrapper_name=WRAPPER_NAME,
-        nn_in_depth=NN_IN_DEPTH,
-        nn_out_depth=NN_OUT_DEPTH,
-    )
+    create_axis_wrapper(out_dir=out_dir, core_name=CORE_NAME, wrapper_name=WRAPPER_NAME)
 
-    patch_build_tcl(
-        out_dir=out_dir,
-        core_name=CORE_NAME,
-        wrapper_name=WRAPPER_NAME,
-    )
+    patch_build_tcl(out_dir=out_dir, core_name=CORE_NAME, wrapper_name=WRAPPER_NAME)
 
     write_clean_tcl(out_dir, CORE_NAME, WRAPPER_NAME)
     print_hls_success(out_dir)
