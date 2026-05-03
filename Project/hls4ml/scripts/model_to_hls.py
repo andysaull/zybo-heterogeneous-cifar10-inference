@@ -316,47 +316,99 @@ def print_hls_success(out_dir: Path):
     print(f"HLS project: {out_dir}")
 
 
+
 tf, hls4ml = import_hls_dependencies()
 
 MODEL_FILE = TRAIN_MODELS_DIR / "modelo_cifar10_zybo_float_MID_v3.h5"
-OUT_DIR = HLS_PROJECTS_DIR / "cifar10_mid_v3_gap_safe"
+OUT_DIR = HLS_PROJECTS_DIR / "cifar10_mid_v3_dsp_compact"
 
-# Keep the profile that fit on Zybo and adjust only the numerically risky tail.
-MODEL_PRECISION = "ap_fixed<9,3>"
-
-# GAP accumulates a 4x4 map before averaging, so the output needs extra range.
-OUTPUT_PRECISION = "ap_fixed<14,5,AP_TRN,AP_SAT>"
-GAP_ACCUM_PRECISION = "ap_fixed<18,9,AP_TRN,AP_SAT>"
-
-MODEL_REUSE_FACTOR = 4096
+MODEL_REUSE_FACTOR = 2048
 
 
-def set_output_precision(config):
-    config["Model"]["Precision"] = MODEL_PRECISION
-    config["Model"]["ReuseFactor"] = MODEL_REUSE_FACTOR
+def fixed(width, integer, quant_mode, overflow_mode):
+    return f"ap_fixed<{width},{integer},{quant_mode},{overflow_mode}>"
+
+
+def set_layer_precision(config, layer_name, result, accum=None, weight=None, bias=None):
+    layer_cfg = config["LayerName"].setdefault(layer_name, {})
+    precision = layer_cfg.setdefault("Precision", {})
+    if not isinstance(precision, dict):
+        precision = {}
+        layer_cfg["Precision"] = precision
+
+    precision["result"] = result
+    if accum is not None:
+        precision["accum"] = accum
+    if weight is not None:
+        precision["weight"] = weight
+    if bias is not None:
+        precision["bias"] = bias
+
+
+def apply_dsp_compact_config(config, reuse_factor, quant_mode, overflow_mode):
+    weight_precision = fixed(9, 3, quant_mode, overflow_mode)
+    input_precision = fixed(9, 2, quant_mode, overflow_mode)
+    act_early_precision = fixed(9, 3, quant_mode, overflow_mode)
+    act_mid_precision = fixed(10, 4, quant_mode, overflow_mode)
+    act_late_precision = fixed(11, 5, quant_mode, overflow_mode)
+    classmap_precision = fixed(12, 6, quant_mode, overflow_mode)
+    output_precision = fixed(12, 5, quant_mode, overflow_mode)
+
+    conv_accum_precision = fixed(16, 7, quant_mode, overflow_mode)
+    pointwise_accum_precision = fixed(17, 8, quant_mode, overflow_mode)
+    class_accum_precision = fixed(17, 8, quant_mode, overflow_mode)
+    pool_accum_precision = fixed(16, 7, quant_mode, overflow_mode)
+    gap_accum_precision = fixed(20, 10, quant_mode, overflow_mode)
+
+    config["Model"]["Precision"] = weight_precision
+    config["Model"]["ReuseFactor"] = reuse_factor
     config["Model"]["Strategy"] = "Resource"
     config["Model"]["FIFO_opt"] = 1
     config["Model"]["BramFactor"] = 1000000
+    config["Model"]["ConvImplementation"] = "LineBuffer"
 
     if "LayerName" not in config:
         config["LayerName"] = {}
 
-    output_cfg = config["LayerName"].setdefault("output", {})
-    precision = output_cfg.setdefault("Precision", {})
-    if not isinstance(precision, dict):
-        precision = {}
-        output_cfg["Precision"] = precision
+    set_layer_precision(config, "input_layer", input_precision)
 
-    precision["result"] = OUTPUT_PRECISION
-    precision["accum"] = GAP_ACCUM_PRECISION
+    set_layer_precision(config, "conv1", act_early_precision, conv_accum_precision, weight_precision, weight_precision)
+    set_layer_precision(config, "conv1_relu", act_early_precision)
+    set_layer_precision(config, "pool1", act_early_precision, pool_accum_precision)
+
+    set_layer_precision(config, "conv2", act_mid_precision, conv_accum_precision, weight_precision, weight_precision)
+    set_layer_precision(config, "conv2_relu", act_mid_precision)
+    set_layer_precision(config, "pool2", act_mid_precision, pool_accum_precision)
+
+    set_layer_precision(config, "conv3_features", act_late_precision, conv_accum_precision, weight_precision, weight_precision)
+    set_layer_precision(config, "conv3_features_relu", act_late_precision)
+
+    set_layer_precision(config, "conv4_mix", act_late_precision, pointwise_accum_precision, weight_precision, weight_precision)
+    set_layer_precision(config, "conv4_mix_relu", act_late_precision)
+
+    set_layer_precision(config, "conv5_classes", classmap_precision, class_accum_precision, weight_precision, weight_precision)
+    set_layer_precision(config, "output", output_precision, gap_accum_precision)
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Convert MID_v3 to HLS while widening only the GlobalAveragePooling output."
+        description="Convert MID_v3 to HLS with a compact DSP-oriented precision profile."
     )
     parser.add_argument("--model-file", default=MODEL_FILE)
     parser.add_argument("--out-dir", default=str(OUT_DIR))
+    parser.add_argument("--reuse-factor", type=int, default=MODEL_REUSE_FACTOR)
+    parser.add_argument(
+        "--quant-mode",
+        choices=["AP_RND", "AP_TRN"],
+        default="AP_RND",
+        help="AP_RND usually tracks Keras better; AP_TRN can save LUTs when precision allows it.",
+    )
+    parser.add_argument(
+        "--overflow-mode",
+        choices=["AP_SAT", "AP_WRAP"],
+        default="AP_SAT",
+        help="AP_SAT protects overflow; AP_WRAP can save LUTs when integer range is sufficient.",
+    )
     parser.add_argument(
         "--no-force-dsp-mult",
         action="store_true",
@@ -367,12 +419,12 @@ def parse_args():
 
 def main():
     args = parse_args()
-    out_dir = Path(args.out_dir)
+    out_dir = Path(args.out_dir).resolve()
 
     model = tf.keras.models.load_model(args.model_file, compile=False)
 
-    config = hls4ml.utils.config_from_keras_model(model, granularity="Model")
-    set_output_precision(config)
+    config = hls4ml.utils.config_from_keras_model(model, granularity="name")
+    apply_dsp_compact_config(config, args.reuse_factor, args.quant_mode, args.overflow_mode)
 
     hls_model = hls4ml.converters.convert_from_keras_model(
         model,
@@ -381,7 +433,7 @@ def main():
         project_name=CORE_NAME,
         part=PART,
         io_type="io_stream",
-        backend="Vitis",
+        backend="Vivado",
     )
 
     hls_model.write()
