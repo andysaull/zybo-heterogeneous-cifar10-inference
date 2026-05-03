@@ -320,28 +320,14 @@ def print_hls_success(out_dir: Path):
 tf, hls4ml = import_hls_dependencies()
 
 MODEL_FILE = TRAIN_MODELS_DIR / "modelo_cifar10_zybo_float_MID_v3.h5"
-OUT_DIR = HLS_PROJECTS_DIR / "cifar10_mid_v3_dsp_balanced"
-
-MODEL_PRECISION = "ap_fixed<10,4,AP_RND,AP_SAT>"
-WEIGHT_PRECISION = MODEL_PRECISION
-INPUT_PRECISION = "ap_fixed<12,4,AP_RND,AP_SAT>"
-
-ACT_EARLY_PRECISION = "ap_fixed<10,4,AP_RND,AP_SAT>"
-ACT_MID_PRECISION = "ap_fixed<11,4,AP_RND,AP_SAT>"
-ACT_LATE_PRECISION = "ap_fixed<13,5,AP_RND,AP_SAT>"
-CLASSMAP_PRECISION = "ap_fixed<15,6,AP_RND,AP_SAT>"
-OUTPUT_PRECISION = "ap_fixed<15,6,AP_RND,AP_SAT>"
-
-CONV_ACCUM_PRECISION = "ap_fixed<18,8,AP_RND,AP_SAT>"
-POOL_ACCUM_PRECISION = "ap_fixed<18,8,AP_RND,AP_SAT>"
-POINTWISE_ACCUM_PRECISION = "ap_fixed<18,8,AP_RND,AP_SAT>"
-CLASS_ACCUM_PRECISION = "ap_fixed<18,8,AP_RND,AP_SAT>"
-GAP_ACCUM_PRECISION = "ap_fixed<22,12,AP_RND,AP_SAT>"
-
-MODEL_REUSE_FACTOR = 512
+OUT_DIR = HLS_PROJECTS_DIR / "cifar10_mid_v3_dsp_margin"
 
 
-def set_layer_precision(config, layer_name, result, accum=None, weight=WEIGHT_PRECISION, bias=WEIGHT_PRECISION):
+def fixed(width, integer, quant_mode, overflow_mode):
+    return f"ap_fixed<{width},{integer},{quant_mode},{overflow_mode}>"
+
+
+def set_layer_precision(config, layer_name, result, accum=None, weight=None, bias=None):
     layer_cfg = config["LayerName"].setdefault(layer_name, {})
     precision = layer_cfg.setdefault("Precision", {})
     if not isinstance(precision, dict):
@@ -357,8 +343,70 @@ def set_layer_precision(config, layer_name, result, accum=None, weight=WEIGHT_PR
         precision["bias"] = bias
 
 
-def apply_dsp_balanced_config(config, reuse_factor):
-    config["Model"]["Precision"] = MODEL_PRECISION
+def apply_margin_config(config, reuse_factor, profile):
+    quant_mode = "AP_RND"
+    overflow_mode = "AP_WRAP"
+
+    if profile == "tail":
+        weight_precision = fixed(9, 3, quant_mode, overflow_mode)
+        input_precision = fixed(9, 2, quant_mode, overflow_mode)
+        act_early_precision = fixed(9, 3, quant_mode, overflow_mode)
+        act_mid_precision = fixed(10, 4, quant_mode, overflow_mode)
+        act_late_precision = fixed(11, 5, quant_mode, overflow_mode)
+        classmap_precision = fixed(11, 6, quant_mode, overflow_mode)
+        output_precision = fixed(11, 5, quant_mode, overflow_mode)
+
+        conv_accum_precision = fixed(16, 7, quant_mode, overflow_mode)
+        pointwise_accum_precision = fixed(17, 8, quant_mode, overflow_mode)
+        class_accum_precision = fixed(16, 8, quant_mode, overflow_mode)
+        pool_accum_precision = fixed(16, 7, quant_mode, overflow_mode)
+        gap_accum_precision = fixed(19, 10, quant_mode, overflow_mode)
+    elif profile == "acts":
+        weight_precision = fixed(9, 3, quant_mode, overflow_mode)
+        input_precision = fixed(8, 2, quant_mode, overflow_mode)
+        act_early_precision = fixed(8, 3, quant_mode, overflow_mode)
+        act_mid_precision = fixed(9, 4, quant_mode, overflow_mode)
+        act_late_precision = fixed(10, 5, quant_mode, overflow_mode)
+        classmap_precision = fixed(11, 6, quant_mode, overflow_mode)
+        output_precision = fixed(11, 5, quant_mode, overflow_mode)
+
+        conv_accum_precision = fixed(15, 7, quant_mode, overflow_mode)
+        pointwise_accum_precision = fixed(16, 8, quant_mode, overflow_mode)
+        class_accum_precision = fixed(16, 8, quant_mode, overflow_mode)
+        pool_accum_precision = fixed(15, 7, quant_mode, overflow_mode)
+        gap_accum_precision = fixed(19, 10, quant_mode, overflow_mode)
+    elif profile == "acts2":
+        weight_precision = fixed(9, 3, quant_mode, overflow_mode)
+        input_precision = fixed(8, 2, quant_mode, overflow_mode)
+        act_early_precision = fixed(8, 3, quant_mode, overflow_mode)
+        act_mid_precision = fixed(9, 4, quant_mode, overflow_mode)
+        act_late_precision = fixed(10, 5, quant_mode, overflow_mode)
+        classmap_precision = fixed(10, 6, quant_mode, overflow_mode)
+        output_precision = fixed(10, 5, quant_mode, overflow_mode)
+
+        conv_accum_precision = fixed(14, 7, quant_mode, overflow_mode)
+        pointwise_accum_precision = fixed(15, 8, quant_mode, overflow_mode)
+        class_accum_precision = fixed(15, 8, quant_mode, overflow_mode)
+        pool_accum_precision = fixed(14, 7, quant_mode, overflow_mode)
+        gap_accum_precision = fixed(18, 10, quant_mode, overflow_mode)
+    elif profile == "weights8":
+        weight_precision = fixed(8, 3, quant_mode, overflow_mode)
+        input_precision = fixed(9, 2, quant_mode, overflow_mode)
+        act_early_precision = fixed(9, 3, quant_mode, overflow_mode)
+        act_mid_precision = fixed(10, 4, quant_mode, overflow_mode)
+        act_late_precision = fixed(11, 5, quant_mode, overflow_mode)
+        classmap_precision = fixed(11, 6, quant_mode, overflow_mode)
+        output_precision = fixed(11, 5, quant_mode, overflow_mode)
+
+        conv_accum_precision = fixed(16, 7, quant_mode, overflow_mode)
+        pointwise_accum_precision = fixed(17, 8, quant_mode, overflow_mode)
+        class_accum_precision = fixed(16, 8, quant_mode, overflow_mode)
+        pool_accum_precision = fixed(16, 7, quant_mode, overflow_mode)
+        gap_accum_precision = fixed(19, 10, quant_mode, overflow_mode)
+    else:
+        raise ValueError(f"Unsupported profile: {profile}")
+
+    config["Model"]["Precision"] = weight_precision
     config["Model"]["ReuseFactor"] = reuse_factor
     config["Model"]["Strategy"] = "Resource"
     config["Model"]["FIFO_opt"] = 1
@@ -368,38 +416,34 @@ def apply_dsp_balanced_config(config, reuse_factor):
     if "LayerName" not in config:
         config["LayerName"] = {}
 
-    set_layer_precision(config, "input_layer", INPUT_PRECISION, weight=None, bias=None)
+    set_layer_precision(config, "input_layer", input_precision)
 
-    set_layer_precision(config, "conv1", ACT_EARLY_PRECISION, CONV_ACCUM_PRECISION)
-    set_layer_precision(config, "conv1_relu", ACT_EARLY_PRECISION, weight=None, bias=None)
-    set_layer_precision(config, "pool1", ACT_EARLY_PRECISION, POOL_ACCUM_PRECISION, weight=None, bias=None)
+    set_layer_precision(config, "conv1", act_early_precision, conv_accum_precision, weight_precision, weight_precision)
+    set_layer_precision(config, "conv1_relu", act_early_precision)
+    set_layer_precision(config, "pool1", act_early_precision, pool_accum_precision)
 
-    set_layer_precision(config, "conv2", ACT_MID_PRECISION, CONV_ACCUM_PRECISION)
-    set_layer_precision(config, "conv2_relu", ACT_MID_PRECISION, weight=None, bias=None)
-    set_layer_precision(config, "pool2", ACT_MID_PRECISION, POOL_ACCUM_PRECISION, weight=None, bias=None)
+    set_layer_precision(config, "conv2", act_mid_precision, conv_accum_precision, weight_precision, weight_precision)
+    set_layer_precision(config, "conv2_relu", act_mid_precision)
+    set_layer_precision(config, "pool2", act_mid_precision, pool_accum_precision)
 
-    set_layer_precision(config, "conv3_features", ACT_LATE_PRECISION, CONV_ACCUM_PRECISION)
-    set_layer_precision(config, "conv3_features_relu", ACT_LATE_PRECISION, weight=None, bias=None)
+    set_layer_precision(config, "conv3_features", act_late_precision, conv_accum_precision, weight_precision, weight_precision)
+    set_layer_precision(config, "conv3_features_relu", act_late_precision)
 
-    set_layer_precision(config, "conv4_mix", ACT_LATE_PRECISION, POINTWISE_ACCUM_PRECISION)
-    set_layer_precision(config, "conv4_mix_relu", ACT_LATE_PRECISION, weight=None, bias=None)
+    set_layer_precision(config, "conv4_mix", act_late_precision, pointwise_accum_precision, weight_precision, weight_precision)
+    set_layer_precision(config, "conv4_mix_relu", act_late_precision)
 
-    set_layer_precision(config, "conv5_classes", CLASSMAP_PRECISION, CLASS_ACCUM_PRECISION)
-    set_layer_precision(config, "output", OUTPUT_PRECISION, GAP_ACCUM_PRECISION, weight=None, bias=None)
+    set_layer_precision(config, "conv5_classes", classmap_precision, class_accum_precision, weight_precision, weight_precision)
+    set_layer_precision(config, "output", output_precision, gap_accum_precision)
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Convert MID_v3 to HLS with the balanced DSP profile."
+        description="Convert MID_v3 to HLS with margin profiles that trade precision for LUT savings."
     )
     parser.add_argument("--model-file", default=MODEL_FILE)
     parser.add_argument("--out-dir", default=str(OUT_DIR))
-    parser.add_argument(
-        "--reuse-factor",
-        type=int,
-        default=MODEL_REUSE_FACTOR,
-        help="Lower values use more DSPs and usually reduce latency.",
-    )
+    parser.add_argument("--reuse-factor", type=int, default=2048)
+    parser.add_argument("--profile", choices=["tail", "acts", "acts2", "weights8"], default="acts")
     parser.add_argument(
         "--no-force-dsp-mult",
         action="store_true",
@@ -415,7 +459,7 @@ def main():
     model = tf.keras.models.load_model(args.model_file, compile=False)
 
     config = hls4ml.utils.config_from_keras_model(model, granularity="name")
-    apply_dsp_balanced_config(config, args.reuse_factor)
+    apply_margin_config(config, args.reuse_factor, args.profile)
 
     hls_model = hls4ml.converters.convert_from_keras_model(
         model,
