@@ -319,8 +319,8 @@ def print_hls_success(out_dir: Path):
 
 tf, hls4ml = import_hls_dependencies()
 
-MODEL_FILE = TRAIN_MODELS_DIR / "modelo_cifar10_zybo_float_MID_v3.h5"
-OUT_DIR = HLS_PROJECTS_DIR / "cifar10_mid_v3_dsp_margin"
+MODEL_FILE = TRAIN_MODELS_DIR / "modelo_cifar10_zybo_float_MID_v4.h5"
+OUT_DIR = HLS_PROJECTS_DIR / "cifar10_mid_v4_resource"
 
 
 def fixed(width, integer, quant_mode, overflow_mode):
@@ -343,68 +343,20 @@ def set_layer_precision(config, layer_name, result, accum=None, weight=None, bia
         precision["bias"] = bias
 
 
-def apply_margin_config(config, reuse_factor, profile):
-    quant_mode = "AP_RND"
-    overflow_mode = "AP_WRAP"
+def apply_dsp_compact_config(config, reuse_factor, quant_mode, overflow_mode):
+    weight_precision = fixed(9, 3, quant_mode, overflow_mode)
+    input_precision = fixed(9, 2, quant_mode, overflow_mode)
+    act_early_precision = fixed(9, 3, quant_mode, overflow_mode)
+    act_mid_precision = fixed(10, 4, quant_mode, overflow_mode)
+    act_late_precision = fixed(11, 5, quant_mode, overflow_mode)
+    classmap_precision = fixed(12, 6, quant_mode, overflow_mode)
+    output_precision = fixed(12, 5, quant_mode, overflow_mode)
 
-    if profile == "tail":
-        weight_precision = fixed(9, 3, quant_mode, overflow_mode)
-        input_precision = fixed(9, 2, quant_mode, overflow_mode)
-        act_early_precision = fixed(9, 3, quant_mode, overflow_mode)
-        act_mid_precision = fixed(10, 4, quant_mode, overflow_mode)
-        act_late_precision = fixed(11, 5, quant_mode, overflow_mode)
-        classmap_precision = fixed(11, 6, quant_mode, overflow_mode)
-        output_precision = fixed(11, 5, quant_mode, overflow_mode)
-
-        conv_accum_precision = fixed(16, 7, quant_mode, overflow_mode)
-        pointwise_accum_precision = fixed(17, 8, quant_mode, overflow_mode)
-        class_accum_precision = fixed(16, 8, quant_mode, overflow_mode)
-        pool_accum_precision = fixed(16, 7, quant_mode, overflow_mode)
-        gap_accum_precision = fixed(19, 10, quant_mode, overflow_mode)
-    elif profile == "acts":
-        weight_precision = fixed(9, 3, quant_mode, overflow_mode)
-        input_precision = fixed(8, 2, quant_mode, overflow_mode)
-        act_early_precision = fixed(8, 3, quant_mode, overflow_mode)
-        act_mid_precision = fixed(9, 4, quant_mode, overflow_mode)
-        act_late_precision = fixed(10, 5, quant_mode, overflow_mode)
-        classmap_precision = fixed(11, 6, quant_mode, overflow_mode)
-        output_precision = fixed(11, 5, quant_mode, overflow_mode)
-
-        conv_accum_precision = fixed(15, 7, quant_mode, overflow_mode)
-        pointwise_accum_precision = fixed(16, 8, quant_mode, overflow_mode)
-        class_accum_precision = fixed(16, 8, quant_mode, overflow_mode)
-        pool_accum_precision = fixed(15, 7, quant_mode, overflow_mode)
-        gap_accum_precision = fixed(19, 10, quant_mode, overflow_mode)
-    elif profile == "acts2":
-        weight_precision = fixed(9, 3, quant_mode, overflow_mode)
-        input_precision = fixed(8, 2, quant_mode, overflow_mode)
-        act_early_precision = fixed(8, 3, quant_mode, overflow_mode)
-        act_mid_precision = fixed(9, 4, quant_mode, overflow_mode)
-        act_late_precision = fixed(10, 5, quant_mode, overflow_mode)
-        classmap_precision = fixed(10, 6, quant_mode, overflow_mode)
-        output_precision = fixed(10, 5, quant_mode, overflow_mode)
-
-        conv_accum_precision = fixed(14, 7, quant_mode, overflow_mode)
-        pointwise_accum_precision = fixed(15, 8, quant_mode, overflow_mode)
-        class_accum_precision = fixed(15, 8, quant_mode, overflow_mode)
-        pool_accum_precision = fixed(14, 7, quant_mode, overflow_mode)
-        gap_accum_precision = fixed(18, 10, quant_mode, overflow_mode)
-    elif profile == "weights8":
-        weight_precision = fixed(8, 3, quant_mode, overflow_mode)
-        input_precision = fixed(9, 2, quant_mode, overflow_mode)
-        act_early_precision = fixed(9, 3, quant_mode, overflow_mode)
-        act_mid_precision = fixed(10, 4, quant_mode, overflow_mode)
-        act_late_precision = fixed(11, 5, quant_mode, overflow_mode)
-        classmap_precision = fixed(11, 6, quant_mode, overflow_mode)
-        output_precision = fixed(11, 5, quant_mode, overflow_mode)
-
-        conv_accum_precision = fixed(16, 7, quant_mode, overflow_mode)
-        pointwise_accum_precision = fixed(17, 8, quant_mode, overflow_mode)
-        class_accum_precision = fixed(16, 8, quant_mode, overflow_mode)
-        pool_accum_precision = fixed(16, 7, quant_mode, overflow_mode)
-        gap_accum_precision = fixed(19, 10, quant_mode, overflow_mode)
-    else:
-        raise ValueError(f"Unsupported profile: {profile}")
+    conv_accum_precision = fixed(16, 7, quant_mode, overflow_mode)
+    pointwise_accum_precision = fixed(17, 8, quant_mode, overflow_mode)
+    class_accum_precision = fixed(17, 8, quant_mode, overflow_mode)
+    pool_accum_precision = fixed(16, 7, quant_mode, overflow_mode)
+    gap_accum_precision = fixed(20, 10, quant_mode, overflow_mode)
 
     config["Model"]["Precision"] = weight_precision
     config["Model"]["ReuseFactor"] = reuse_factor
@@ -438,12 +390,23 @@ def apply_margin_config(config, reuse_factor, profile):
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Convert MID_v3 to HLS with margin profiles that trade precision for LUT savings."
+        description="Convert MID_v4 to HLS using the best-fitting MID_v3 resource profile."
     )
     parser.add_argument("--model-file", default=MODEL_FILE)
     parser.add_argument("--out-dir", default=str(OUT_DIR))
     parser.add_argument("--reuse-factor", type=int, default=2048)
-    parser.add_argument("--profile", choices=["tail", "acts", "acts2", "weights8"], default="acts")
+    parser.add_argument(
+        "--quant-mode",
+        choices=["AP_RND", "AP_TRN"],
+        default="AP_RND",
+        help="AP_RND usually keeps the output closer to Keras.",
+    )
+    parser.add_argument(
+        "--overflow-mode",
+        choices=["AP_SAT", "AP_WRAP"],
+        default="AP_WRAP",
+        help="AP_WRAP saved LUTs in MID_v3 and was the closest resource-fit candidate.",
+    )
     parser.add_argument(
         "--no-force-dsp-mult",
         action="store_true",
@@ -459,7 +422,7 @@ def main():
     model = tf.keras.models.load_model(args.model_file, compile=False)
 
     config = hls4ml.utils.config_from_keras_model(model, granularity="name")
-    apply_margin_config(config, args.reuse_factor, args.profile)
+    apply_dsp_compact_config(config, args.reuse_factor, args.quant_mode, args.overflow_mode)
 
     hls_model = hls4ml.converters.convert_from_keras_model(
         model,
