@@ -1,0 +1,159 @@
+
+
+================================================================
+== Vitis HLS Report for 'cifar10_axis_wrapper'
+================================================================
+* Date:           Tue May  5 04:59:16 2026
+
+* Version:        2025.2 (Build 6295257 on Nov 14 2025)
+* Project:        cifar10_axis_wrapper_prj
+* Solution:       solution1 (Vivado IP Flow Target)
+* Product family: zynq
+* Target device:  xc7z010-clg400-1
+
+
+================================================================
+== Performance Estimates
+================================================================
++ Timing: 
+    * Summary: 
+    +--------+----------+-----------+------------+
+    |  Clock |  Target  | Estimated | Uncertainty|
+    +--------+----------+-----------+------------+
+    |ap_clk  |  10.00 ns|  13.990 ns|     2.70 ns|
+    +--------+----------+-----------+------------+
+
++ Latency: 
+    * Summary: 
+    +---------+---------+----------+----------+-------+--------+----------+
+    |  Latency (cycles) |  Latency (absolute) |    Interval    | Pipeline |
+    |   min   |   max   |    min   |    max   |  min  |   max  |   Type   |
+    +---------+---------+----------+----------+-------+--------+----------+
+    |   232259|   232275|  3.249 ms|  3.250 ms|  12378|  229378|  dataflow|
+    +---------+---------+----------+----------+-------+--------+----------+
+
+    + Detail: 
+        * Instance: 
+        +--------------------------+-----------------------+---------+---------+-----------+-----------+-------+--------+------------------------------------------------+
+        |                          |                       |  Latency (cycles) |   Latency (absolute)  |    Interval    |                    Pipeline                    |
+        |         Instance         |         Module        |   min   |   max   |    min    |    max    |  min  |   max  |                      Type                      |
+        +--------------------------+-----------------------+---------+---------+-----------+-----------+-------+--------+------------------------------------------------+
+        |axis_to_hls4ml_input_U0   |axis_to_hls4ml_input   |     3074|     3074|  30.740 us|  30.740 us|   3072|    3072|  loop auto-rewind stp (delay=0 clock cycles(s))|
+        |cifar10_hls_core_U0       |cifar10_hls_core       |   232257|   232273|   3.249 ms|   3.250 ms|  12378|  229378|                                        dataflow|
+        |hls4ml_output_to_axis_U0  |hls4ml_output_to_axis  |       19|       19|   0.190 us|   0.190 us|     19|      19|                                              no|
+        +--------------------------+-----------------------+---------+---------+-----------+-----------+-------+--------+------------------------------------------------+
+
+        * Loop: 
+        N/A
+
+
+
+================================================================
+== Utilization Estimates
+================================================================
+* Summary: 
++-----------------+---------+----+-------+-------+-----+
+|       Name      | BRAM_18K| DSP|   FF  |  LUT  | URAM|
++-----------------+---------+----+-------+-------+-----+
+|DSP              |        -|   -|      -|      -|    -|
+|Expression       |        -|   -|      0|      2|    -|
+|FIFO             |        -|   -|    198|    136|    -|
+|Instance         |      120|   2|  23463|  36280|    0|
+|Memory           |        -|   -|      -|      -|    -|
+|Multiplexer      |        -|   -|      -|      -|    -|
+|Register         |        -|   -|      -|      -|    -|
++-----------------+---------+----+-------+-------+-----+
+|Total            |      120|   2|  23661|  36418|    0|
++-----------------+---------+----+-------+-------+-----+
+|Available        |      120|  80|  35200|  17600|    0|
++-----------------+---------+----+-------+-------+-----+
+|Utilization (%)  |      100|   2|     67|    206|    0|
++-----------------+---------+----+-------+-------+-----+
+
++ Detail: 
+    * Instance: 
+    +--------------------------+-----------------------+---------+----+-------+-------+-----+
+    |         Instance         |         Module        | BRAM_18K| DSP|   FF  |  LUT  | URAM|
+    +--------------------------+-----------------------+---------+----+-------+-------+-----+
+    |CTRL_s_axi_U              |CTRL_s_axi             |        0|   0|     36|     40|    0|
+    |axis_to_hls4ml_input_U0   |axis_to_hls4ml_input   |        0|   0|     48|    162|    0|
+    |cifar10_hls_core_U0       |cifar10_hls_core       |      120|   2|  23199|  35753|    0|
+    |hls4ml_output_to_axis_U0  |hls4ml_output_to_axis  |        0|   0|    180|    325|    0|
+    +--------------------------+-----------------------+---------+----+-------+-------+-----+
+    |Total                     |                       |      120|   2|  23463|  36280|    0|
+    +--------------------------+-----------------------+---------+----+-------+-------+-----+
+
+    * DSP: 
+    N/A
+
+    * Memory: 
+    N/A
+
+    * FIFO: 
+    +----------+---------+----+----+-----+------+-----+---------+
+    |   Name   | BRAM_18K| FF | LUT| URAM| Depth| Bits| Size:D*B|
+    +----------+---------+----+----+-----+------+-----+---------+
+    |nn_in_U   |        0|  99|   0|    -|    16|   27|      432|
+    |nn_out_U  |        0|  99|   0|    -|     2|  120|      240|
+    +----------+---------+----+----+-----+------+-----+---------+
+    |Total     |        0| 198|   0|    0|    18|  147|      672|
+    +----------+---------+----+----+-----+------+-----+---------+
+
+    * Expression: 
+    +--------------+----------+----+---+----+------------+------------+
+    | Variable Name| Operation| DSP| FF| LUT| Bitwidth P0| Bitwidth P1|
+    +--------------+----------+----+---+----+------------+------------+
+    |ap_idle       |       and|   0|  0|   2|           1|           1|
+    +--------------+----------+----+---+----+------------+------------+
+    |Total         |          |   0|  0|   2|           1|           1|
+    +--------------+----------+----+---+----+------------+------------+
+
+    * Multiplexer: 
+    N/A
+
+    * Register: 
+    N/A
+
+
+
+================================================================
+== Interface
+================================================================
+* Summary: 
++--------------------+-----+-----+------------+----------------------+--------------+
+|      RTL Ports     | Dir | Bits|  Protocol  |     Source Object    |    C Type    |
++--------------------+-----+-----+------------+----------------------+--------------+
+|s_axi_CTRL_AWVALID  |   in|    1|       s_axi|                  CTRL|   return void|
+|s_axi_CTRL_AWREADY  |  out|    1|       s_axi|                  CTRL|   return void|
+|s_axi_CTRL_AWADDR   |   in|    4|       s_axi|                  CTRL|   return void|
+|s_axi_CTRL_WVALID   |   in|    1|       s_axi|                  CTRL|   return void|
+|s_axi_CTRL_WREADY   |  out|    1|       s_axi|                  CTRL|   return void|
+|s_axi_CTRL_WDATA    |   in|   32|       s_axi|                  CTRL|   return void|
+|s_axi_CTRL_WSTRB    |   in|    4|       s_axi|                  CTRL|   return void|
+|s_axi_CTRL_ARVALID  |   in|    1|       s_axi|                  CTRL|   return void|
+|s_axi_CTRL_ARREADY  |  out|    1|       s_axi|                  CTRL|   return void|
+|s_axi_CTRL_ARADDR   |   in|    4|       s_axi|                  CTRL|   return void|
+|s_axi_CTRL_RVALID   |  out|    1|       s_axi|                  CTRL|   return void|
+|s_axi_CTRL_RREADY   |   in|    1|       s_axi|                  CTRL|   return void|
+|s_axi_CTRL_RDATA    |  out|   32|       s_axi|                  CTRL|   return void|
+|s_axi_CTRL_RRESP    |  out|    2|       s_axi|                  CTRL|   return void|
+|s_axi_CTRL_BVALID   |  out|    1|       s_axi|                  CTRL|   return void|
+|s_axi_CTRL_BREADY   |   in|    1|       s_axi|                  CTRL|   return void|
+|s_axi_CTRL_BRESP    |  out|    2|       s_axi|                  CTRL|   return void|
+|ap_clk              |   in|    1|  ap_ctrl_hs|  cifar10_axis_wrapper|  return value|
+|ap_rst_n            |   in|    1|  ap_ctrl_hs|  cifar10_axis_wrapper|  return value|
+|interrupt           |  out|    1|  ap_ctrl_hs|  cifar10_axis_wrapper|  return value|
+|s_axis_TDATA        |   in|   32|        axis|       s_axis_V_data_V|       pointer|
+|s_axis_TKEEP        |   in|    4|        axis|       s_axis_V_keep_V|       pointer|
+|s_axis_TSTRB        |   in|    4|        axis|       s_axis_V_strb_V|       pointer|
+|s_axis_TLAST        |   in|    1|        axis|       s_axis_V_last_V|       pointer|
+|s_axis_TVALID       |   in|    1|        axis|       s_axis_V_last_V|       pointer|
+|s_axis_TREADY       |  out|    1|        axis|       s_axis_V_last_V|       pointer|
+|m_axis_TDATA        |  out|   32|        axis|       m_axis_V_data_V|       pointer|
+|m_axis_TKEEP        |  out|    4|        axis|       m_axis_V_keep_V|       pointer|
+|m_axis_TSTRB        |  out|    4|        axis|       m_axis_V_strb_V|       pointer|
+|m_axis_TLAST        |  out|    1|        axis|       m_axis_V_last_V|       pointer|
+|m_axis_TVALID       |  out|    1|        axis|       m_axis_V_last_V|       pointer|
+|m_axis_TREADY       |   in|    1|        axis|       m_axis_V_last_V|       pointer|
++--------------------+-----+-----+------------+----------------------+--------------+
+

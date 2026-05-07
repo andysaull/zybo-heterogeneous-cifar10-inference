@@ -1,0 +1,206 @@
+
+
+================================================================
+== Vitis HLS Report for 'global_pooling2d_cl_Pipeline_ReadInputHeight_ReadInputWidth'
+================================================================
+* Date:           Tue May  5 04:59:12 2026
+
+* Version:        2025.2 (Build 6295257 on Nov 14 2025)
+* Project:        cifar10_axis_wrapper_prj
+* Solution:       solution1 (Vivado IP Flow Target)
+* Product family: zynq
+* Target device:  xc7z010-clg400-1
+
+
+================================================================
+== Performance Estimates
+================================================================
++ Timing: 
+    * Summary: 
+    +--------+----------+----------+------------+
+    |  Clock |  Target  | Estimated| Uncertainty|
+    +--------+----------+----------+------------+
+    |ap_clk  |  10.00 ns|  4.911 ns|     2.70 ns|
+    +--------+----------+----------+------------+
+
++ Latency: 
+    * Summary: 
+    +---------+---------+----------+----------+-----+-----+-------------------+
+    |  Latency (cycles) |  Latency (absolute) |  Interval |      Pipeline     |
+    |   min   |   max   |    min   |    max   | min | max |        Type       |
+    +---------+---------+----------+----------+-----+-----+-------------------+
+    |       18|       18|  0.180 us|  0.180 us|    0|    0|  loop pipeline stp|
+    +---------+---------+----------+----------+-----+-----+-------------------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        +----------------------------------+---------+---------+----------+-----------+-----------+------+----------+
+        |                                  |  Latency (cycles) | Iteration|  Initiation Interval  | Trip |          |
+        |             Loop Name            |   min   |   max   |  Latency |  achieved |   target  | Count| Pipelined|
+        +----------------------------------+---------+---------+----------+-----------+-----------+------+----------+
+        |- ReadInputHeight_ReadInputWidth  |       16|       16|         2|          1|          1|    16|       yes|
+        +----------------------------------+---------+---------+----------+-----------+-----------+------+----------+
+
+
+
+================================================================
+== Utilization Estimates
+================================================================
+* Summary: 
++-----------------+---------+----+-------+-------+-----+
+|       Name      | BRAM_18K| DSP|   FF  |  LUT  | URAM|
++-----------------+---------+----+-------+-------+-----+
+|DSP              |        -|   -|      -|      -|    -|
+|Expression       |        -|   -|      0|    302|    -|
+|FIFO             |        -|   -|      -|      -|    -|
+|Instance         |        -|   -|      -|      -|    -|
+|Memory           |        -|   -|      -|      -|    -|
+|Multiplexer      |        -|   -|      0|    135|    -|
+|Register         |        -|   -|    330|      -|    -|
++-----------------+---------+----+-------+-------+-----+
+|Total            |        0|   0|    330|    437|    0|
++-----------------+---------+----+-------+-------+-----+
+|Available        |      120|  80|  35200|  17600|    0|
++-----------------+---------+----+-------+-------+-----+
+|Utilization (%)  |        0|   0|     ~0|      2|    0|
++-----------------+---------+----+-------+-------+-----+
+
++ Detail: 
+    * Instance: 
+    N/A
+
+    * DSP: 
+    N/A
+
+    * Memory: 
+    N/A
+
+    * FIFO: 
+    N/A
+
+    * Expression: 
+    +---------------------------+----------+----+---+----+------------+------------+
+    |       Variable Name       | Operation| DSP| FF| LUT| Bitwidth P0| Bitwidth P1|
+    +---------------------------+----------+----+---+----+------------+------------+
+    |add_ln512_fu_368_p2        |         +|   0|  0|  13|           4|           1|
+    |x_29_fu_426_p2             |         +|   0|  0|  27|          20|          20|
+    |x_30_fu_536_p2             |         +|   0|  0|  27|          20|          20|
+    |x_31_fu_547_p2             |         +|   0|  0|  27|          20|          20|
+    |x_32_fu_558_p2             |         +|   0|  0|  27|          20|          20|
+    |x_33_fu_569_p2             |         +|   0|  0|  27|          20|          20|
+    |x_34_fu_580_p2             |         +|   0|  0|  27|          20|          20|
+    |x_35_fu_591_p2             |         +|   0|  0|  27|          20|          20|
+    |x_36_fu_602_p2             |         +|   0|  0|  27|          20|          20|
+    |x_37_fu_613_p2             |         +|   0|  0|  27|          20|          20|
+    |x_38_fu_624_p2             |         +|   0|  0|  27|          20|          20|
+    |ap_block_pp0_stage0_11001  |       and|   0|  0|   2|           1|           1|
+    |ap_condition_423           |       and|   0|  0|   2|           1|           1|
+    |icmp_ln512_fu_374_p2       |      icmp|   0|  0|  13|           4|           2|
+    |ap_enable_pp0              |       xor|   0|  0|   2|           1|           2|
+    +---------------------------+----------+----+---+----+------------+------------+
+    |Total                      |          |   0|  0| 302|         211|         207|
+    +---------------------------+----------+----+---+----+------------+------------+
+
+    * Multiplexer: 
+    +---------------------------------------+----+-----------+-----+-----------+
+    |                  Name                 | LUT| Input Size| Bits| Total Bits|
+    +---------------------------------------+----+-----------+-----+-----------+
+    |ap_done_int                            |   9|          2|    1|          2|
+    |ap_loop_exit_ready_pp0_iter1_reg       |   9|          2|    1|          2|
+    |ap_sig_allocacmp_indvar_flatten2_load  |   9|          2|    4|          8|
+    |indvar_flatten2_fu_96                  |   9|          2|    4|          8|
+    |layer12_out_blk_n                      |   9|          2|    1|          2|
+    |x22_fu_136                             |   9|          2|   20|         40|
+    |x_1_fu_104                             |   9|          2|   20|         40|
+    |x_2_fu_108                             |   9|          2|   20|         40|
+    |x_3_fu_112                             |   9|          2|   20|         40|
+    |x_4_fu_116                             |   9|          2|   20|         40|
+    |x_5_fu_120                             |   9|          2|   20|         40|
+    |x_6_fu_124                             |   9|          2|   20|         40|
+    |x_7_fu_128                             |   9|          2|   20|         40|
+    |x_8_fu_132                             |   9|          2|   20|         40|
+    |x_fu_100                               |   9|          2|   20|         40|
+    +---------------------------------------+----+-----------+-----+-----------+
+    |Total                                  | 135|         30|  211|        422|
+    +---------------------------------------+----+-----------+-----+-----------+
+
+    * Register: 
+    +-------------------------------------------+----+----+-----+-----------+
+    |                    Name                   | FF | LUT| Bits| Const Bits|
+    +-------------------------------------------+----+----+-----+-----------+
+    |ap_CS_fsm                                  |   1|   0|    1|          0|
+    |ap_block_pp0_stage0_subdone_grp0_done_reg  |   1|   0|    1|          0|
+    |ap_done_reg                                |   1|   0|    1|          0|
+    |ap_enable_reg_pp0_iter1                    |   1|   0|    1|          0|
+    |ap_loop_exit_ready_pp0_iter1_reg           |   1|   0|    1|          0|
+    |icmp_ln512_reg_812                         |   1|   0|    1|          0|
+    |indvar_flatten2_fu_96                      |   4|   0|    4|          0|
+    |tmp_1_reg_772                              |  12|   0|   12|          0|
+    |tmp_2_reg_777                              |  12|   0|   12|          0|
+    |tmp_3_reg_782                              |  12|   0|   12|          0|
+    |tmp_4_reg_787                              |  12|   0|   12|          0|
+    |tmp_5_reg_792                              |  12|   0|   12|          0|
+    |tmp_6_reg_797                              |  12|   0|   12|          0|
+    |tmp_7_reg_802                              |  12|   0|   12|          0|
+    |tmp_8_reg_807                              |  12|   0|   12|          0|
+    |tmp_s_reg_767                              |  12|   0|   12|          0|
+    |trunc_ln485_reg_762                        |  12|   0|   12|          0|
+    |x22_fu_136                                 |  20|   0|   20|          0|
+    |x_1_fu_104                                 |  20|   0|   20|          0|
+    |x_2_fu_108                                 |  20|   0|   20|          0|
+    |x_3_fu_112                                 |  20|   0|   20|          0|
+    |x_4_fu_116                                 |  20|   0|   20|          0|
+    |x_5_fu_120                                 |  20|   0|   20|          0|
+    |x_6_fu_124                                 |  20|   0|   20|          0|
+    |x_7_fu_128                                 |  20|   0|   20|          0|
+    |x_8_fu_132                                 |  20|   0|   20|          0|
+    |x_fu_100                                   |  20|   0|   20|          0|
+    +-------------------------------------------+----+----+-----+-----------+
+    |Total                                      | 330|   0|  330|          0|
+    +-------------------------------------------+----+----+-----+-----------+
+
+
+
+================================================================
+== Interface
+================================================================
+* Summary: 
++----------------------------+-----+-----+------------+-------------------------------------------------------------+--------------+
+|          RTL Ports         | Dir | Bits|  Protocol  |                        Source Object                        |    C Type    |
++----------------------------+-----+-----+------------+-------------------------------------------------------------+--------------+
+|ap_clk                      |   in|    1|  ap_ctrl_hs|  global_pooling2d_cl_Pipeline_ReadInputHeight_ReadInputWidth|  return value|
+|ap_rst                      |   in|    1|  ap_ctrl_hs|  global_pooling2d_cl_Pipeline_ReadInputHeight_ReadInputWidth|  return value|
+|ap_start                    |   in|    1|  ap_ctrl_hs|  global_pooling2d_cl_Pipeline_ReadInputHeight_ReadInputWidth|  return value|
+|ap_done                     |  out|    1|  ap_ctrl_hs|  global_pooling2d_cl_Pipeline_ReadInputHeight_ReadInputWidth|  return value|
+|ap_idle                     |  out|    1|  ap_ctrl_hs|  global_pooling2d_cl_Pipeline_ReadInputHeight_ReadInputWidth|  return value|
+|ap_ready                    |  out|    1|  ap_ctrl_hs|  global_pooling2d_cl_Pipeline_ReadInputHeight_ReadInputWidth|  return value|
+|layer12_out_dout            |   in|  120|     ap_fifo|                                                  layer12_out|       pointer|
+|layer12_out_empty_n         |   in|    1|     ap_fifo|                                                  layer12_out|       pointer|
+|layer12_out_read            |  out|    1|     ap_fifo|                                                  layer12_out|       pointer|
+|layer12_out_num_data_valid  |   in|    5|     ap_fifo|                                                  layer12_out|       pointer|
+|layer12_out_fifo_cap        |   in|    5|     ap_fifo|                                                  layer12_out|       pointer|
+|data_window_out             |  out|   19|      ap_vld|                                              data_window_out|       pointer|
+|data_window_out_ap_vld      |  out|    1|      ap_vld|                                              data_window_out|       pointer|
+|data_window_1_out           |  out|   19|      ap_vld|                                            data_window_1_out|       pointer|
+|data_window_1_out_ap_vld    |  out|    1|      ap_vld|                                            data_window_1_out|       pointer|
+|data_window_2_out           |  out|   19|      ap_vld|                                            data_window_2_out|       pointer|
+|data_window_2_out_ap_vld    |  out|    1|      ap_vld|                                            data_window_2_out|       pointer|
+|data_window_3_out           |  out|   19|      ap_vld|                                            data_window_3_out|       pointer|
+|data_window_3_out_ap_vld    |  out|    1|      ap_vld|                                            data_window_3_out|       pointer|
+|data_window_4_out           |  out|   19|      ap_vld|                                            data_window_4_out|       pointer|
+|data_window_4_out_ap_vld    |  out|    1|      ap_vld|                                            data_window_4_out|       pointer|
+|data_window_5_out           |  out|   19|      ap_vld|                                            data_window_5_out|       pointer|
+|data_window_5_out_ap_vld    |  out|    1|      ap_vld|                                            data_window_5_out|       pointer|
+|data_window_6_out           |  out|   19|      ap_vld|                                            data_window_6_out|       pointer|
+|data_window_6_out_ap_vld    |  out|    1|      ap_vld|                                            data_window_6_out|       pointer|
+|data_window_7_out           |  out|   19|      ap_vld|                                            data_window_7_out|       pointer|
+|data_window_7_out_ap_vld    |  out|    1|      ap_vld|                                            data_window_7_out|       pointer|
+|data_window_8_out           |  out|   19|      ap_vld|                                            data_window_8_out|       pointer|
+|data_window_8_out_ap_vld    |  out|    1|      ap_vld|                                            data_window_8_out|       pointer|
+|data_window_9_out           |  out|   19|      ap_vld|                                            data_window_9_out|       pointer|
+|data_window_9_out_ap_vld    |  out|    1|      ap_vld|                                            data_window_9_out|       pointer|
++----------------------------+-----+-----+------------+-------------------------------------------------------------+--------------+
+

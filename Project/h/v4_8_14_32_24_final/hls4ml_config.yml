@@ -1,0 +1,106 @@
+Backend: Vivado
+ClockPeriod: 5
+ClockUncertainty: 12.5%
+HLSConfig:
+  LayerName:
+    conv1:
+      Precision:
+        accum: ap_fixed<16,7,AP_RND,AP_WRAP>
+        bias: ap_fixed<9,3,AP_RND,AP_WRAP>
+        result: ap_fixed<9,3,AP_RND,AP_WRAP>
+        weight: ap_fixed<9,3,AP_RND,AP_WRAP>
+      Trace: false
+    conv1_relu:
+      Precision:
+        result: ap_fixed<9,3,AP_RND,AP_WRAP>
+      Trace: false
+    conv2:
+      Precision:
+        accum: ap_fixed<16,7,AP_RND,AP_WRAP>
+        bias: ap_fixed<9,3,AP_RND,AP_WRAP>
+        result: ap_fixed<10,4,AP_RND,AP_WRAP>
+        weight: ap_fixed<9,3,AP_RND,AP_WRAP>
+      Trace: false
+    conv2_relu:
+      Precision:
+        result: ap_fixed<10,4,AP_RND,AP_WRAP>
+      Trace: false
+    conv3_features:
+      Precision:
+        accum: ap_fixed<16,7,AP_RND,AP_WRAP>
+        bias: ap_fixed<9,3,AP_RND,AP_WRAP>
+        result: ap_fixed<11,5,AP_RND,AP_WRAP>
+        weight: ap_fixed<9,3,AP_RND,AP_WRAP>
+      Trace: false
+    conv3_features_relu:
+      Precision:
+        result: ap_fixed<11,5,AP_RND,AP_WRAP>
+      Trace: false
+    conv4_mix:
+      Precision:
+        accum: ap_fixed<17,8,AP_RND,AP_WRAP>
+        bias: ap_fixed<9,3,AP_RND,AP_WRAP>
+        result: ap_fixed<11,5,AP_RND,AP_WRAP>
+        weight: ap_fixed<9,3,AP_RND,AP_WRAP>
+      Trace: false
+    conv4_mix_relu:
+      Precision:
+        result: ap_fixed<11,5,AP_RND,AP_WRAP>
+      Trace: false
+    conv5_classes:
+      Precision:
+        accum: ap_fixed<17,8,AP_RND,AP_WRAP>
+        bias: ap_fixed<9,3,AP_RND,AP_WRAP>
+        result: ap_fixed<12,6,AP_RND,AP_WRAP>
+        weight: ap_fixed<9,3,AP_RND,AP_WRAP>
+      Trace: false
+    input_layer:
+      Precision:
+        result: ap_fixed<9,2,AP_RND,AP_WRAP>
+      Trace: false
+    output:
+      Precision:
+        accum: ap_fixed<20,10,AP_RND,AP_WRAP>
+        result: ap_fixed<12,5,AP_RND,AP_WRAP>
+      Trace: false
+    pool1:
+      Precision:
+        accum: ap_fixed<16,7,AP_RND,AP_WRAP>
+        result: ap_fixed<9,3,AP_RND,AP_WRAP>
+      Trace: false
+    pool2:
+      Precision:
+        accum: ap_fixed<16,7,AP_RND,AP_WRAP>
+        result: ap_fixed<10,4,AP_RND,AP_WRAP>
+      Trace: false
+  Model:
+    BitExact: null
+    BramFactor: 1000000
+    ConvImplementation: LineBuffer
+    FIFO_opt: 1
+    Precision: ap_fixed<9,3,AP_RND,AP_WRAP>
+    ReuseFactor: 2048
+    Strategy: Resource
+    TraceOutput: false
+IOType: io_stream
+InputData: null
+InputShapes:
+  input_layer:
+  - 32
+  - 32
+  - 3
+KerasModel: !keras_model 'E:\Andy\COLEGIO\Ingenieria_de_Software\TFG\Project\h\v4_8_14_32_24_final/keras_model.keras'
+OutputDir: E:\Andy\COLEGIO\Ingenieria_de_Software\TFG\Project\h\v4_8_14_32_24_final
+OutputPredictions: null
+OutputShapes:
+  layer13_out:
+  - 10
+Part: xc7z010clg400-1
+ProjectName: cifar10_hls_core
+Stamp: 2772fcc4
+Version: 1.0.0
+WriterConfig:
+  Namespace: null
+  TBOutputStream: both
+  WriteTar: false
+  WriteWeightsTxt: true
