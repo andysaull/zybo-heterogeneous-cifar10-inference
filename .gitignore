@@ -1,4 +1,4 @@
-# Vivado generated
+# Vivado/Vitis generated
 .rigel_lopper/
 _ide/
 *.cache/
@@ -7,4 +7,21 @@ _ide/
 *.ip_user_files/
 *.runs/
 *.sim/
+*.Xil/
+**/logs/
+**/export/
+**/build/
+**/.autopilot/
 
+**/*.log
+**/*.jou
+**/*.str
+**/*.backup.*
+**/*.bit
+**/*.bin
+**/*.dcp
+**/*.elf
+**/*.o
+**/*.obj
+**/*.a
+**/compile_commands.json
