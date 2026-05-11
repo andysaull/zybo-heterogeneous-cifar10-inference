@@ -1,0 +1,105 @@
+\chapter*{Introduction}
+\label{cap:introduction}
+\addcontentsline{toc}{chapter}{Introduction}
+
+The computing landscape is undergoing a major shift. Driven by the rapid growth of
+Artificial Intelligence, real-time data processing is no longer merely desirable; it
+has become a fundamental requirement.
+While the traditional approach relied on offloading neural network computation to
+large cloud data centers, current trends are moving toward Edge AI: bringing
+intelligence closer to the data source, directly onto the local device.
+This approach significantly reduces latency, improves user privacy by avoiding the
+transmission of sensitive data over the network, and reduces the load on communication
+infrastructures. \citep{zhou2019edgeintelligencepavingmile}.
+
+This is where FPGAs become a key enabling technology.
+Unlike traditional CPUs and GPUs, which process data either sequentially or through
+fixed forms of parallelism, FPGAs allow custom hardware architectures to be designed
+from the ground up, optimizing data flow and exploiting instruction-level parallelism.
+This is particularly relevant for addressing current physical limitations such as the
+Power Wall, where further increasing the operating frequency of conventional processors
+is no longer energy-efficient.
+\citep{10.1145/3282307}
+
+For these reasons, this Bachelor's Thesis focuses on an in-depth exploration of
+hardware-software co-design.
+To carry this out, the Digilent Zybo platform will be used \citep{digilentZyboOverview},
+a development board that integrates the flexibility of an ARM Cortex-A9 processor for
+control-oriented tasks with the computational capabilities of a Xilinx/AMD 7-series
+FPGA for intensive processing workloads, all within the same chip. From an academic
+perspective, this platform provides an ideal environment for emulating industrial
+embedded systems, giving the designer fine-grained control over every clock cycle and
+every data transfer through high-performance buses such as AXI4.
+
+\section*{Motivation}
+\addcontentsline{toc}{section}{Motivation}
+The demand for computational performance, mainly driven by Artificial Intelligence and
+Deep Learning algorithms, is increasing at a pace that general-purpose processors can
+no longer address efficiently under strict power-consumption constraints. Moving
+inference from the cloud to local embedded devices is no longer optional; it is the
+natural direction of the field.
+
+The main technical challenge of this work, and what makes it particularly demanding,
+is to make the most of an FPGA with limited resources, only around 80 DSP blocks, in
+order to run Machine Learning models. This will be supported by modern High-Level
+Synthesis (HLS) tools, which help reduce the complexity traditionally associated with
+pure hardware design and make the development process more accessible and efficient.
+
+\section*{Objectives}
+\addcontentsline{toc}{section}{Objectives}
+The main objective of this work is to design, implement, and evaluate a heterogeneous
+embedded system based on the Zynq-7010 SoC, capable of accelerating the inference of a
+lightweight Artificial Intelligence model.
+As a direct consequence, this work also aims to quantify the performance improvement
+achieved by the hardware implementation when compared with the execution of the same
+inference flow on the ARM microprocessor.
+To achieve this goal, the following specific objectives are defined:
+
+\begin{enumerate}
+  \item \textbf{Platform bring-up:} Configure the Vivado/Vitis development environment
+    from scratch for the Digilent Zybo board, validating the independent operation of
+    both the ARM Cortex-A9 microprocessor and the FPGA.
+  \item \textbf{Communication infrastructure design:} Implement high-bandwidth
+    communication channels between the Processing System and the Programmable Logic,
+    using the AMBA AXI protocol and Direct Memory Access (DMA) controllers.
+  \item \textbf{Acceleration of a baseline computation:} Develop a basic linear algebra
+    IP core in C++, specifically a matrix multiplication accelerator, and synthesize it
+    into hardware using HLS in order to validate the data flow between the processor
+    and the FPGA.
+  \item \textbf{AI implementation under limited resources:} Adapt a neural network model,
+    specifically a CIFAR-10 Convolutional Neural Network, to the limited resources of
+    the Zynq-7010, generating its hardware implementation and developing the control
+    software required to provide the input data.
+  \item \textbf{Performance evaluation (Benchmarking):} Compare execution times, in terms
+    of latency, by running the neural network inference on the CPU alone and comparing
+    it with the FPGA-assisted execution.
+\end{enumerate}
+
+\section*{Work plan}
+\addcontentsline{toc}{section}{Work plan}
+To organize the development process and meet the project milestones, the work is divided
+into the following incremental phases:
+
+\textbf{Phase 1.} Research and familiarization: Review of the state of the art in Zynq-based
+systems, AXI buses, and High-Level Synthesis. Installation of the required tools
+(Vivado and Vitis) and execution of a "Hello World" application on the board.
+
+\textbf{Phase 2.} PS-PL communication: Configuration of control registers through AXI-Lite and
+setup of the memory subsystem using AXI DMA. Development of bare-metal C drivers to
+transfer data from RAM to the FPGA.
+
+\textbf{Phase 3.} Development of the baseline accelerator in HLS: Implementation of matrix
+multiplication in C/C++. Use of HLS pragmas such as PIPELINE and UNROLL to optimize
+the generated hardware. Integration of the resulting IP block into the Vivado design
+together with the DMA.
+
+\textbf{Phase 4.} Design and implementation of the AI model: Training and/or export of a
+Convolutional Neural Network model for CIFAR-10 image classification. Generation of
+the neural network hardware accelerator and integration into the Vivado block design.
+
+\textbf{Phase 5.} Testing and benchmarking: Execution of inference on the FPGA and comparison
+against the hls4ml-generated core running on the ARM. Collection of performance metrics
+and verification of the obtained results.
+
+\textbf{Phase 6.} Thesis report writing: Documentation of the development process, analysis of
+the obtained results, and final writing of the Bachelor's Thesis document.

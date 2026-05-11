@@ -1,0 +1,194 @@
+\chapter{Estado de la Cuestión}
+\label{cap:estadoDeLaCuestion}
+
+Durante décadas, la evolución de la computación se apoyó en aumentar la frecuencia de los
+procesadores y en integrar más transistores en el mismo chip. Esa tendencia permitió que muchas
+aplicaciones mejorasen sin cambiar demasiado la forma de programarlas. Sin embargo, en los últimos
+años se ha hecho evidente que esa vía no escala igual de bien: el consumo, la disipación térmica y
+la dificultad de explotar más paralelismo dentro de una CPU generalista han empujado a buscar
+arquitecturas más especializadas \citep{10.1145/3282307}.
+
+Este cambio se nota especialmente en aplicaciones de inteligencia artificial. Una red neuronal no
+suele estar limitada por una única operación compleja, sino por miles o millones de operaciones
+simples repetidas: multiplicaciones, acumulaciones, accesos a memoria, activaciones y movimientos
+de datos. En una CPU estas operaciones se ejecutan siguiendo una arquitectura muy flexible, pero no
+siempre eficiente. En cambio, una FPGA permite construir una ruta de datos a medida para una tarea
+concreta, explotando paralelismo espacial y reutilizando recursos de forma controlada
+\citep{electronics10091025}.
+
+Por este motivo, muchos sistemas empotrados actuales se plantean como sistemas heterogéneos: una
+parte del chip se dedica al control y a la ejecución de software convencional, mientras que otra
+parte implementa aceleradores específicos. En este trabajo esa división aparece de forma natural:
+el procesador ARM prepara los datos, controla las transferencias y muestra los resultados, mientras
+que la lógica programable ejecuta la inferencia del modelo.
+
+\section{Arquitectura Zynq-7000 y Comunicaciones AXI}
+La familia Zynq-7000 combina en un mismo circuito integrado un sistema de procesamiento
+(\textit{Processing System}, PS) y lógica programable (\textit{Programmable Logic}, PL). En el caso
+de la Zybo utilizada en este trabajo, el dispositivo es un Zynq-7010. La parte PS incluye un ARM
+Cortex-A9 de doble núcleo, memoria DDR y periféricos habituales de un sistema empotrado. La parte
+PL equivale a una FPGA de la familia 7-series, donde se pueden integrar bloques hardware propios.
+
+Esta arquitectura es especialmente interesante porque evita tener una FPGA aislada. El procesador y
+la lógica programable comparten el mismo sistema y se comunican mediante buses AMBA AXI
+\citep{amdAxiDma}. AXI4-Lite
+se utiliza normalmente para acceder a registros de control, por ejemplo para arrancar un IP o leer
+su estado. AXI4-Stream, en cambio, está pensado para transportar datos como un flujo continuo, sin
+direcciones por cada palabra. Por último, los puertos de alto rendimiento del Zynq permiten que un
+DMA lea y escriba directamente en memoria DDR, descargando al procesador de copiar los datos uno a
+uno.
+
+Esta separación entre control y datos es clave en aceleración. El ARM no debe enviar cada pixel de
+forma manual al acelerador, porque entonces el coste de comunicación consumiría buena parte del
+beneficio. La solución habitual es preparar buffers en DDR, limpiar o invalidar la caché cuando sea
+necesario, y dejar que el AXI DMA mueva bloques completos entre memoria y FPGA.
+
+La limitación principal de la Zybo no está en el concepto de arquitectura, sino en el tamaño del
+dispositivo. Según la hoja de datos de la familia Zynq-7000, el Zynq-7010 dispone de 17.600 LUT,
+35.200 flip-flops, 60 bloques BRAM de 36 Kb y 80 bloques DSP \citep{zynq7000Datasheet}. Estas
+cifras son suficientes para aprender y prototipar, pero obligan a cuidar mucho el tamaño de una red
+convolucional.
+
+\section{Síntesis de Alto Nivel (HLS)}
+Tradicionalmente, una FPGA se programaba describiendo el hardware con VHDL o Verilog. Esto da mucho
+control, pero también obliga a pensar en registros, ciclos de reloj, máquinas de estados y rutas de
+datos desde el principio. La Síntesis de Alto Nivel, o HLS, intenta elevar ese nivel de abstracción:
+el diseñador describe el algoritmo en C o C++, y la herramienta genera una implementación RTL que
+después puede integrarse como IP en Vivado.
+
+En el caso de AMD/Xilinx, Vitis HLS sintetiza funciones C/C++ a RTL para implementarlas en la
+lógica programable y permite exportarlas como IP de Vivado \citep{amdVitisHLS}. Esto no significa
+que el código C se ejecute como software dentro de la FPGA. La herramienta analiza bucles, arrays,
+dependencias de datos y tipos, y a partir de ahí construye hardware: memorias, registros,
+multiplexores, operadores aritméticos y lógica de control.
+
+Las directivas HLS son una parte importante del flujo. Con \texttt{PIPELINE} se puede intentar que
+un bucle acepte nuevos datos cada pocos ciclos, aunque las operaciones anteriores sigan avanzando
+por la ruta de datos. Con \texttt{UNROLL} se pueden duplicar operaciones para ejecutar varias
+iteraciones en paralelo. Con directivas de interfaz se decide si una función se conectará por
+AXI4-Lite, AXI4-Stream o memoria. Estas decisiones no son detalles menores: afectan directamente a
+la latencia, al consumo de LUT, al uso de DSP, a la BRAM y a la posibilidad de que Vivado coloque
+el diseño en la FPGA.
+
+Por eso HLS no elimina el diseño hardware, sino que cambia dónde se toman muchas decisiones. En un
+proyecto pequeño puede acelerar mucho el desarrollo; en un proyecto ajustado en recursos, como una
+CNN en una Zynq-7010, sigue siendo imprescindible leer los informes de síntesis, entender los
+cuellos de botella y ajustar el código o las directivas.
+
+\section{hls4ml y generación de modelos para FPGA}
+hls4ml \citep{fastml_hls4ml} es una herramienta de codiseño hardware-software orientada a traducir
+modelos de aprendizaje
+automático a implementaciones para FPGA o ASIC. En lugar de escribir a mano cada capa de una red
+neuronal en C++ para HLS, hls4ml parte de modelos entrenados en herramientas habituales de machine
+learning y genera un proyecto HLS con la topología, los pesos y las funciones necesarias para la
+inferencia \citep{fahim2021hls4mlopensourcecodesignworkflow}.
+
+Su flujo encaja muy bien con este proyecto. Primero se entrena un modelo en TensorFlow/Keras y se
+guarda en formato \texttt{.h5}. Después hls4ml interpreta esa red, crea una representación interna
+del grafo y genera código C++ sintetizable. La documentación de hls4ml describe esta separación
+entre frontends, que leen modelos de frameworks como Keras u ONNX, y backends, que generan código
+para herramientas como Vivado HLS, Vitis HLS o Intel HLS \citep{hls4mlDocs}.
+
+La aportación de hls4ml no es solo convertir capas. También permite configurar la precisión de los
+datos, el factor de reutilización de operadores, la estrategia de síntesis y el tipo de entrada y
+salida del modelo. En una FPGA pequeña, estas opciones son decisivas. Reducir el ancho de palabra
+puede ahorrar LUT y BRAM, pero también puede degradar la precisión. Aumentar el factor de
+reutilización reduce área, pero aumenta latencia. Elegir una arquitectura de flujo puede ahorrar
+memoria en algunas capas, pero introduce FIFOs y lógica adicional que también cuentan para Vivado.
+
+En este trabajo se ha usado hls4ml precisamente como puente entre el entrenamiento del modelo y la
+generación del IP. La red no se ha tratado como una caja negra: ha sido necesario ajustar canales,
+precisiones, buffers, interfaz AXI-Stream y configuración de recursos hasta conseguir que el diseño
+entrase en la Zybo.
+
+\section{IA en FPGAs con recursos limitados}
+El despliegue de modelos de visión artificial en sistemas empotrados está condicionado por dos
+restricciones: cálculo y memoria. En una GPU o en una FPGA grande se puede ejecutar una red
+convolucional con muchas capas y canales, pero en una Zynq-7010 cada capa adicional se nota en el
+uso de LUT, BRAM y lógica de control.
+
+Por eso, cuando se trabaja con placas pequeñas, se suelen aplicar modelos compactos y técnicas de
+cuantización. La cuantización reduce la precisión de pesos y activaciones para que la inferencia
+pueda ejecutarse con enteros o punto fijo en lugar de coma flotante. Esta idea está ampliamente
+extendida en inferencia embebida: trabajos como el de Jacob et al. muestran que la aritmética
+entera puede reducir memoria y mejorar la eficiencia manteniendo una precisión razonable si se
+diseña correctamente el flujo de entrenamiento e inferencia \citep{Jacob_2018_CVPR}.
+
+En este proyecto se ha seguido esa misma filosofía, aunque adaptada al flujo HLS. El modelo se
+entrena en coma flotante, pero la inferencia final se ejecuta con tipos de punto fijo
+\citep{amdPrecisionFixedPoint}. Esta
+decisión permite que el diseño sea viable en recursos, pero introduce una consecuencia importante:
+el comportamiento numérico de la FPGA no tiene por qué coincidir exactamente con el modelo original
+de Keras. Los redondeos, truncados y anchos de acumulación forman parte del diseño.
+
+CIFAR-10 añade además una dificultad razonable para una placa de este tamaño. El dataset contiene
+60.000 imágenes RGB de 32x32 repartidas en 10 clases, con 50.000 imágenes de entrenamiento y
+10.000 de test \citep{cifar10Dataset}. Frente a MNIST, que trabaja con dígitos en escala de grises,
+CIFAR-10 exige extraer características de color, textura y forma en imágenes muy pequeñas. Esto lo
+convierte en una prueba más interesante, pero también más exigente para una CNN reducida.
+
+\section{Herramientas utilizadas en el flujo}
+El proyecto se apoya en varias herramientas que cubren etapas distintas del desarrollo:
+
+\begin{itemize}
+  \item \textbf{TensorFlow/Keras:} entrenamiento del modelo y exportación a formato \texttt{.h5}.
+  \item \textbf{hls4ml:} conversión del modelo entrenado a código C++ sintetizable y generación del
+    proyecto HLS.
+  \item \textbf{Vitis HLS:} síntesis del código C++ a RTL y empaquetado del acelerador como IP.
+  \item \textbf{Vivado:} integración del IP con el Zynq Processing System, AXI DMA e interconexiones
+    AXI, además de síntesis, implementación y generación del bitstream.
+  \item \textbf{Vitis:} desarrollo de las aplicaciones bare-metal que se ejecutan sobre el ARM,
+    inicializan los drivers, preparan buffers y lanzan la inferencia.
+\end{itemize}
+
+Esta cadena de herramientas permite recorrer todo el camino desde el entrenamiento hasta la placa,
+pero también introduce un reto práctico: cada etapa genera artefactos intermedios y puede conservar
+resultados antiguos. Por eso la reproducibilidad y la organización de carpetas son parte importante
+del trabajo, no solo una cuestión estética.
+
+\section{Panorama industrial y proyectos de referencia}
+La transición hacia la computación heterogénea no es solo una respuesta académica al estancamiento
+del rendimiento de las CPUs. También se ha convertido en una estrategia industrial para reducir
+latencia y consumo en cargas muy concretas.
+
+\subsection{Microsoft Project Catapult}
+Uno de los referentes más conocidos en el uso de FPGAs a gran escala es Project Catapult de
+Microsoft. Este proyecto surgió para acelerar tareas de búsqueda y
+clasificación en centros de datos \citep{putnam2014a}.
+La idea principal era añadir FPGAs a los servidores para obtener aceleradores reconfigurables
+capaces de adaptarse a distintos algoritmos sin sustituir toda la infraestructura.
+
+\url{https://www.microsoft.com/en-us/research/project/project-catapult/}
+
+\subsection{NVDLA}
+NVDLA, anunciado por NVIDIA, representa otro enfoque: una arquitectura abierta y configurable para
+inferencia de aprendizaje profundo \citep{nvdlaDocumentation}.
+Aunque está más cerca de un acelerador dedicado que de una FPGA
+general, es relevante porque refleja la misma tendencia: construir hardware específico para redes
+neuronales, con especial atención a tipos de datos reducidos y eficiencia.
+
+\url{https://nvdla.org/}
+
+\subsection{BNN-PYNQ-ZYBO}
+A una escala más cercana a este trabajo, el repositorio \textit{BNN-PYNQ-ZYBO} adapta el proyecto
+BNN-PYNQ \citep{finn} para la Zybo-Z7-10. No es exactamente la Zybo Legacy utilizada aquí, pero
+sí trabaja con
+una placa basada en el mismo tamaño de dispositivo, el Zynq-7010. El propio repositorio indica que
+incluye topologías pensadas específicamente para la Zybo-Z7-10, con redes de pesos y
+activaciones de 1 bit, scripts de síntesis para esa placa y soporte para conjuntos como CIFAR-10 y
+MNIST \citep{bnnPynqZybo}.
+
+Este tipo de proyecto es útil como referencia porque confirma una idea que también aparece durante
+este TFG: en un Zynq-7010, la clave no es intentar llevar una red grande sin cambios, sino diseñar
+una red muy compacta, cuantizada y ajustada al hardware disponible. La diferencia es que este
+trabajo no parte de una red binaria ya preparada, sino que recorre el flujo completo desde
+TensorFlow/Keras hasta hls4ml, Vitis HLS, Vivado y la aplicación bare-metal.
+
+\bigskip
+\noindent\rule{\textwidth}{0.4pt}
+\bigskip
+En conjunto, el estado de la cuestión muestra que el proyecto se sitúa en una línea muy actual: la
+necesidad de mover inferencia de IA hacia hardware especializado y cercano al dato. La Zybo no puede
+competir con aceleradores modernos, pero sí permite estudiar a pequeña escala los mismos problemas:
+movimiento de datos, cuantización, generación de IPs, integración AXI y equilibrio entre precisión,
+latencia y recursos.

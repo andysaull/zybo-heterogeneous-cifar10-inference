@@ -1,0 +1,298 @@
+\chapter{Resultados y evaluación}
+\label{cap:resultadosEvaluacion}
+
+En este capítulo se recogen los resultados obtenidos después de integrar las distintas partes del
+proyecto. No se pretende repetir aquí todo el proceso de desarrollo, descrito en el capítulo
+\ref{cap:descripcionTrabajo}, sino analizar qué se ha conseguido finalmente y hasta qué punto los
+resultados cumplen los objetivos planteados al inicio del trabajo.
+
+En primer lugar, se comparan los recursos hardware
+utilizados por una misma operación implementada mediante HLS y mediante VHDL. Después se analiza el
+encaje del acelerador CIFAR-10 dentro de la Zybo Z-7010. Por último, se estudia el tiempo de
+inferencia obtenido en FPGA frente a la ejecución del core C++ generado por hls4ml en el ARM.
+
+\section{Comparación de recursos entre HLS y VHDL}
+
+Antes de abordar el modelo CIFAR-10 completo, se utilizó la multiplicación de matrices de la fase 3
+como prueba controlada. Esta prueba era más sencilla que la red neuronal, pero ya permitía estudiar
+una cuestión importante: si Vitis HLS generaba hardware razonable frente a una descripción manual
+en VHDL.
+
+Los recursos obtenidos para ambas implementaciones se muestran en la siguiente tabla:
+
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{|l|r|r|r|r|}
+    \hline
+    \textbf{Diseño} & \textbf{LUT} & \textbf{FF} & \textbf{BRAM} & \textbf{DSP} \\ \hline
+    \textbf{VHDL} & 8263 & 4363 & 35 & 72 \\ \hline
+    \textbf{HLS}  & 7723 & 6894 & 32 & 72 \\ \hline
+  \end{tabular}
+  \caption{Comparación de recursos entre la multiplicación de matrices en VHDL y en HLS}
+  \label{tab:recursosMatricesHlsVhdl}
+\end{table}
+
+Ambas versiones utilizan 72 DSP, esto era esperable, ya que las dos
+implementaciones explotan el mismo tipo de paralelismo en la parte aritmética, pero nos asegura
+que ambas soluciones están alineadas. La diferencia está
+en cómo se organiza el resto del circuito. La versión generada con HLS usa 540 LUT menos y 3 BRAM
+menos que la versión VHDL, pero a cambio utiliza 2531 FF más.
+
+Este resultado fue útil por dos motivos. Primero, porque confirmó que HLS no estaba generando una
+implementación desproporcionada en área. Segundo, porque mostró una de las ventajas prácticas de la
+herramienta: el reparto entre memoria, registros y lógica de control se consigue con menos esfuerzo
+manual.
+
+Durante el desarrollo de la versión VHDL apareció una primera implementación en la que no
+se inferían correctamente las BRAM y el uso de LUT se disparaba. En HLS este tipo de decisiones
+quedan más guiadas por la herramienta, lo cual no elimina la necesidad de revisar informes, pero sí
+reduce mucho el coste de llegar a una primera versión funcional.
+
+\section{Utilización de recursos del acelerador CIFAR-10}
+
+El resultado más delicado del proyecto fue conseguir que el modelo CIFAR-10 entrase en la Zybo
+Legacy. La Zynq-7010 integra una FPGA pequeña para implementar una red convolucional, por lo que el
+diseño estuvo limitado principalmente por el número de LUT disponibles. A lo largo del desarrollo
+se probaron varias configuraciones de modelo y de cuantización hasta encontrar una versión que
+Vivado pudiera colocar y rutear correctamente.
+
+La versión final utilizada en placa fue el IP generado a partir del modelo:
+
+\texttt{v4\_8\_14\_32\_24\_final}
+
+Tras integrarlo en Vivado, el diseño completo obtuvo la
+utilización mostrada en la siguiente tabla:
+
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{|l|r|}
+    \hline
+    \textbf{Recurso} & \textbf{Uso en el diseño final} \\ \hline
+    LUT & 16117 \\ \hline
+    FF & 17917 \\ \hline
+    BRAM & 37,5 \\ \hline
+    DSP & 6 \\ \hline
+  \end{tabular}
+  \caption{Utilización de recursos del diseño CIFAR-10 final en la Zybo}
+  \label{tab:recursosCifar10Final}
+\end{table}
+
+El diseño queda cerca del límite de LUT, pero entra en la placa. Esto es importante porque varias
+versiones anteriores fallaban en Vivado con errores de sobreutilización o de empaquetado de slices.
+En cambio, los FF no llegaron a ser el recurso crítico y el uso de BRAM se mantuvo dentro de lo
+admisible para la placa.
+
+Un aspecto llamativo es el bajo uso de DSP
+\citep{amdVitisHLS}. Durante el proyecto se intentó aumentar su utilización
+para descargar lógica combinacional, pero no siempre es posible trasladar automáticamente el coste
+de LUT a DSP. La decisión depende de los tipos de datos, de los anchos de palabra, de las
+directivas HLS, del factor de reutilización y de cómo Vivado termina mapeando las operaciones. En
+este caso, el límite real lo marcó la lógica auxiliar y de control asociada a la red, no solo las
+multiplicaciones.
+
+\section{Validación funcional de la inferencia}
+
+Una vez generado el bitstream, se realizaron pruebas con varias imágenes de prueba.
+
+La primera ejecución se hizo sobre imágenes de test que entrega el propio dataset
+de CIFAR-10, las cuales se han tenido que transformar al formato Q16.16 normalizado.
+
+La ejecución sobre todas estas imágenes ha sido la siguiente:
+
+\begin{table}[h!]
+  \centering
+  \resizebox{\textwidth}{!}{
+    \begin{tabular}{|c|l|r|r|r|r|r|r|r|r|r|r|}
+      \hline
+      \textbf{Img. enviada} &
+      \textbf{Pred.} &
+      \textbf{Plane} &
+      \textbf{Auto} &
+      \textbf{Bird} &
+      \textbf{Cat} &
+      \textbf{Deer} &
+      \textbf{Dog} &
+      \textbf{Frog} &
+      \textbf{Horse} &
+      \textbf{Ship} &
+      \textbf{Truck} \\ \hline
+
+      Plane & \textcolor{green!60!black}{Plane} & \textbf{71.17\%} & 1.35\% & 11.78\% &
+      0.60\% & 0.75\% & 0.22\% & 0.28\% & 0.03\% & 13.61\% & 0.21\% \\ \hline
+      Auto & \textcolor{green!60!black}{Auto}   & 3.59\% & \textbf{60.70\%} & 0.26\% &
+      2.88\% & 0.01\% & 10.63\% & 0.32\% & 6.72\% & 0.02\% & 14.88\% \\ \hline
+      Bird & \textcolor{red}{Truck}             & 5.21\% & 2.07\% & 21.93\% & 6.79\% &
+      19.49\% & 9.05\% & 2.06\% & 1.80\% & 1.35\% & \textbf{30.24\%} \\ \hline
+      Cat & \textcolor{green!60!black}{Cat}     & 0.53\% & 0.32\% & 1.19\% &
+      \textbf{53.14\%} & 2.07\% & 15.78\% & 26.00\% & 0.22\% & 0.45\% & 0.30\% \\ \hline
+      Deer & \textcolor{green!60!black}{Deer}   & 32.07\% & 0.54\% & 15.93\% & 2.48\% &
+      \textbf{34.68\%} & 2.32\% & 0.93\% & 1.53\% & 8.30\% & 1.22\% \\ \hline
+      Dog & \textcolor{red}{Frog}               & 0.43\% & 1.65\% & 4.79\% & 9.69\% &
+      17.14\% & 18.70\% & \textbf{32.13\%} & 14.99\% & 0.19\% & 0.28\% \\ \hline
+      Frog & \textcolor{green!60!black}{Frog}   & 0.06\% & 0.13\% & 6.18\% & 5.56\% &
+      3.72\% & 1.17\% & \textbf{83.11\%} & 0.02\% & 0.04\% & 0.01\% \\ \hline
+      Horse & \textcolor{red}{Truck}            & 0.04\% & 20.13\% & 0.04\% & 0.30\% &
+      0.48\% & 5.63\% & 0.80\% & 35.43\% & 0.02\% & \textbf{37.13\%} \\ \hline
+      Ship & \textcolor{red}{Auto}              & 14.65\% & \textbf{71.26\%} & 0.25\% &
+      0.02\% & 0.03\% & 0.01\% & 0.09\% & 0.01\% & 12.09\% & 1.60\% \\ \hline
+      Truck & \textcolor{green!60!black}{Truck} & 0.17\% & 9.78\% & 0.06\% & 0.11\% &
+      0.02\% & 0.35\% & 0.12\% & 0.07\% & 0.24\% & \textbf{89.08\%} \\ \hline
+
+    \end{tabular}
+  }
+  \caption{Resultados de inferencia para 10 imágenes CIFAR-10 mostrando la confianza por clase}
+  \label{tab:resultadosInferenciaCifar10}
+\end{table}
+
+Con estos resultados, podemos decir que la inferencia en la Zybo funciona de forma real,
+aunque el modelo no es robusto.
+Teniendo en cuenta que el modelo ha sido optimizado para que entre de manera ajustada en los
+recursos que tiene la Z-7010, los resultados son aceptables para el estudio de este proyecto y
+poder verificar que en efecto, podemos ejecutar inferencia.
+
+Muchos de los fallos de predicción que vemos, están casi empatados con la clase real:
+\begin {itemize}
+\item La inferencia sobre \texttt{Horse} está casi empatada con \texttt{Horse}(35.43\%) y
+\texttt{Truck} (37.13\%).
+\item La inferencia sobre \texttt{Dog} se confunde con \texttt{Frog}(32.13\%), pero reparte
+bastante confianza entre \texttt{Deer}(17.14\%), \texttt{Dog}(18.70\%) y
+\texttt{Horse}(14.99\%).
+\item La inferencia sobre \texttt{Deer} acierta aunque con un margen muy pequeño frente a
+\texttt{Plane}(32.07\%).
+\end{itemize}
+
+Estos repartos de predicción apuntan a un modelo pequeño, cuantizado y limitado, no a una salida
+rota del acelerador. Esta interpretación encaja con el efecto habitual de la cuantización: reducir
+precisión y memoria hace viable la inferencia en hardware pequeño, pero puede estrechar el margen
+entre clases cuando el modelo no tiene demasiada capacidad \citep{Jacob_2018_CVPR}.
+
+Hay clases que el modelo reconoce con mucha seguridad, esto nos indica que hay patrones aprendidos
+que se conservan correctamente en la FPGA.
+
+Aun así, esta prueba no es decisiva para validar la precisión global del modelo porque son solo
+10 imágenes. CIFAR-10 incluye 60.000 imágenes de 32x32 píxeles repartidas en 10 clases, con 50.000
+imágenes de entrenamiento y 10.000 imágenes de test \citep{cifar10Dataset}. Por tanto, una
+validación completa debería ejecutar el conjunto de test, o al menos una muestra mucho más amplia y
+balanceada por clase. Esa evaluación queda fuera del alcance de este trabajo, donde se ha priorizado
+cerrar el flujo completo de inferencia en placa.
+
+Además de la prueba con imágenes sacadas del dataset, se ha podido probar la inferencia sobre
+diferentes imágenes descargadas de internet transformándolas mediante la herramienta
+\texttt{image\_file\_to\_h.py}.
+Teniendo en cuenta que la imagen se debe redimensionar a 32x32 píxeles, si queremos obtener una
+predicción correcta con una confianza alta, es importante revisar la imagen reducida y comprobar
+que el objeto no se difumina con el entorno, es suficientemente grande en la imagen o no hay
+ningún otro objeto en la imagen.
+
+\section{Benchmark de inferencia}
+
+El objetivo principal de rendimiento era comprobar si la FPGA reducía la latencia de la inferencia
+frente a una ejecución software en el ARM Cortex-A9. Para ello se midieron varias ejecuciones sobre
+la misma imagen y con el mismo temporizador hardware de la plataforma. En esta comparación se usó
+el mismo modelo generado por hls4ml en dos caminos distintos: por un lado, el IP sintetizado e
+integrado en la FPGA. Por el otro, el core C++ generado por hls4ml ejecutado directamente sobre el
+ARM \citep{hls4mlDocs}.
+
+La siguiente tabla muestra los tiempos obtenidos:
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|r|r|}
+\hline
+\textbf{Ruta de inferencia} & \textbf{Tiempo medio} & \textbf{Mejor tiempo} \\ \hline
+FPGA & 2012 $\mu$s & 2008 $\mu$s \\ \hline
+CPU (ARM) & 171215 $\mu$s & 171161 $\mu$s \\ \hline
+\end{tabular}
+\caption{Benchmark de inferencia CIFAR-10 entre acelerador FPGA y core C++ de hls4ml en ARM}
+\label{tab:benchmarkCifar10FpgaArm}
+\end{table}
+
+Con estos datos, la aceleración media observada es:
+
+\begin{equation}
+\mathrm{speedup} = \frac{171215}{2012} \approx 85.09
+\end{equation}
+
+Es decir, la inferencia acelerada en FPGA fue aproximadamente 85 veces más rápida que la ejecución
+del core C++ de hls4ml en el ARM. Este resultado es coherente con la naturaleza de cada ruta. En la
+FPGA, el modelo se convierte en hardware dedicado y puede explotar paralelismo a nivel de
+operaciones y de flujo de datos. En cambio, en el ARM se ejecuta una descripción C++ pensada para
+ser sintetizada por HLS, no una librería de inferencia optimizada para CPU
+\citep{sze2017efficientprocessingdeepneural}.
+
+Es importante destacar que el tiempo de la ruta FPGA incluye el uso real del sistema: preparación
+del buffer de salida, coherencia de caché, transferencia DMA, ejecución del IP HLS y lectura de los
+resultados. Por tanto, no se está midiendo únicamente el núcleo matemático del acelerador, sino la
+inferencia completa desde el punto de vista de la aplicación bare-metal. Aun incluyendo este coste
+de comunicación, el tiempo se mantiene alrededor de los 2 ms.
+
+La ruta ARM, por su parte, queda penalizada por varios motivos. El core generado por hls4ml utiliza
+tipos de dato de precisión fija, estructuras tipo \texttt{hls::stream} y plantillas C++ orientadas a
+describir hardware. Todas estas construcciones tienen sentido cuando el código se va a transformar
+en un circuito, pero no son la forma más eficiente de ejecutar una red neuronal en un Cortex-A9.
+Por esta razón, el resultado no debe interpretarse como una comparación contra la mejor
+implementación posible en CPU, sino como una comparación entre el acelerador hardware y la
+ejecución software directa del mismo flujo hls4ml.
+
+Además del tiempo de ejecución, también se observaron diferencias en los valores de salida. Para
+la imagen de prueba externa de un perro, ambas rutas predijeron correctamente la clase
+\textit{dog}, pero con logits y porcentajes de confianza distintos:
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|l|r|r|}
+\hline
+\textbf{Ruta} & \textbf{Predicción} & \textbf{Logit dog} & \textbf{Confianza aprox.} \\ \hline
+FPGA & dog & 4.2188 & 91.22\% \\ \hline
+CPU (ARM) & dog & 2.4219 & 48.24\% \\ \hline
+\end{tabular}
+\caption{Comparación de salida entre la inferencia en FPGA y la ejecución hls4ml en ARM}
+\label{tab:comparacionFpgaArmHls4ml}
+\end{table}
+
+Esta diferencia no invalida el benchmark. La clase final se obtiene con el índice del mayor logit,
+y en este caso ambas rutas llegan a la misma predicción. Lo que cambia es la separación entre la
+clase ganadora y el resto de clases. En la FPGA, el logit de \textit{dog} queda mucho más separado
+del resto, y por eso la softmax aproximada muestra una confianza superior al 90\%. En el ARM, la
+salida sigue clasificando como \textit{dog}, pero la separación con otras clases es menor y la
+confianza baja hasta aproximadamente el 48\%.
+
+Hay que recordar que la confianza mostrada por terminal no es una salida directa del modelo
+hardware. El IP devuelve logits en Q16.16, y la aplicación calcula después una softmax aproximada
+para facilitar la lectura. Por tanto, una diferencia moderada entre logits puede transformarse en
+una diferencia grande en el porcentaje final. Este efecto es habitual en clasificadores neuronales:
+la softmax amplifica la distancia relativa entre las puntuaciones \citep{pmlr-v70-guo17a}.
+
+Las diferencias entre FPGA y ARM también son razonables desde el punto de vista numérico. Aunque
+ambas rutas parten del mismo modelo entrenado, no ejecutan exactamente la misma implementación
+aritmética. La FPGA trabaja con el hardware generado por Vitis HLS, con los anchos de palabra,
+redondeos y comportamientos de desbordamiento definidos durante la síntesis. El ARM, en cambio,
+ejecuta una versión C++ del modelo mediante tipos software que emulan precisión fija. Pequeñas
+diferencias de redondeo, truncado, orden de acumulación o conversión entre tipos pueden propagarse
+a través de las capas convolucionales y modificar la distancia entre los logits finales.
+
+Por tanto, la conclusión principal del benchmark es doble. En rendimiento, la FPGA ofrece una
+mejora muy clara frente a ejecutar el core hls4ml en el ARM. En precisión funcional, ambas rutas
+mantienen la misma clase predicha para la imagen evaluada, aunque no producen exactamente los
+mismos logits ni la misma confianza. Esto confirma que la aceleración hardware es efectiva, pero
+también que en un despliegue con cuantización y HLS conviene analizar siempre los logits y no solo
+el porcentaje de confianza impreso por la aplicación.
+
+\section{Valoración global}
+
+Los resultados muestran que el sistema heterogéneo funciona de extremo a extremo: el ARM prepara
+la imagen, la envía a la FPGA mediante AXI DMA, el IP HLS ejecuta la inferencia y la aplicación
+recupera los logits para obtener la clase final. El diseño no se queda en una simulación aislada,
+sino que se ejecuta sobre la placa real.
+
+La mejora temporal frente a ejecutar el core hls4ml directamente en el ARM es muy clara, aunque no
+debe separarse del contexto de la placa utilizada. La placa Zybo tiene recursos muy ajustados para
+una CNN, por lo que el modelo final tuvo que ser pequeño y cuidadosamente cuantizado. A pesar de
+ello, conseguir una inferencia en torno a 2 ms en la FPGA confirma que el uso de hardware dedicado
+es una vía efectiva para reducir latencia en sistemas empotrados.
+
+La evaluación también deja una enseñanza importante: en proyectos HLS no basta con que el modelo
+sea correcto a nivel de código C++. La versión realmente desplegada es el hardware generado, y por
+eso hay que analizar recursos, temporización, comunicación con memoria y comportamiento numérico
+una vez integrado en la placa. Esta parte es una pieza clave para poder confiar en los resultados
+del sistema completo.
