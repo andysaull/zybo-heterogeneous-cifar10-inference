@@ -11,7 +11,7 @@ convolutional model generated with hls4ml, and retrieve the output logits in ord
 obtain the predicted class.
 
 The path toward this final version was not straightforward. The main difficulty was not
-only training a CIFAR-10 model, but making that model actually fit within a Zynq-7010.
+only training a CIFAR-10 model, but making that model actually fit within a Zynq Z-7010.
 Many configurations that seemed reasonable in terms of parameter count became unfeasible
 after implementation in Vivado, especially due to LUT usage and slice packing issues.
 This part of the work made it clear that, on a small FPGA, discussing only the model size
@@ -43,7 +43,7 @@ inference running on dedicated hardware inside a resource-constrained FPGA.
 
 Finally, the evaluation phase made it possible to measure the benefit of the
 acceleration. FPGA inference achieved an average execution time close to 2 ms, compared
-with approximately 171 ms for the hls4ml-generated C++ core running on the ARM. This
+with approximately 171 ms for the hls4ml-generated \texttt{C++} core running on the ARM. This
 represents an approximate speedup of 85 times. Beyond the exact numerical value, the
 important point is that the acceleration was measured on the real board and includes the
 communication cost with the IP core.
@@ -72,7 +72,7 @@ Vivado/Vitis project folder, makes the work easier to maintain and explain.
 \section*{Limitations}
 \addcontentsline{toc}{section}{Limitations}
 The main limitation of the system is the board itself. The Zybo Legacy is a very useful
-platform for learning and prototyping, but the Zynq-7010 provides only a limited margin
+platform for learning and prototyping, but the Zynq Z-7010 provides only a limited margin
 for implementing CNNs. The final model had to be small and tightly constrained in terms
 of resources. This directly affects the accuracy that can be expected and limits the
 complexity of the images that can be classified robustly.
@@ -99,7 +99,7 @@ LUT and BRAM limits of the board
 \citep{han2015deep,howard2017mobilenetsefficientconvolutionalneural}.
 
 It would also be interesting to study DSP usage in more detail. In the final design, DSP
-utilization is low, while LUTs remain the most critical resource. Future work could
+utilization is low, while LUT remain the most critical resource. Future work could
 focus on enforcing a more controlled mapping of multiplications to DSP blocks, adjusting
 data widths to favor that mapping, and comparing different HLS strategies. It will not
 always be possible to move logic into DSP blocks, but this aspect deserves a deeper
@@ -116,8 +116,8 @@ From an evaluation perspective, the next step would be to test many more images 
 of only individual cases. An application capable of reading images from an SD card, or
 even from a camera, would make it possible to evaluate the system in a way that more
 closely resembles a real use case. It would also be interesting to measure energy
-consumption, since one of the reasons for using FPGAs in Edge AI is not only latency,
-but also efficiency \citep{sze2017efficientprocessingdeepneural}.
+consumption, since one of the reasons for using FPGA in Edge AI is not only latency,
+but also energy efficiency \citep{sze2017efficientprocessingdeepneural}.
 
 Finally, the FPGA accelerator could be compared against a more optimized ARM
 implementation, for example using NEON or libraries designed for microcontrollers and

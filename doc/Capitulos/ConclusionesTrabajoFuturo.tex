@@ -10,7 +10,7 @@ recuperar los logits de salida para obtener la clase predicha.
 
 El camino hasta llegar a esa versión final no ha sido lineal. La principal dificultad no estuvo
 solo en entrenar un modelo CIFAR-10, sino en conseguir que dicho modelo cupiese realmente en una
-Zynq-7010. Muchas configuraciones que parecían razonables desde el punto de vista del número de
+Zynq Z-7010. Muchas configuraciones que parecían razonables desde el punto de vista del número de
 parámetros no eran viables después de pasar por Vivado, especialmente por el uso de LUT y por los
 problemas de empaquetado de slices. Esta parte del trabajo dejó claro que, en una FPGA pequeña, no
 basta con hablar de tamaño del modelo: la forma en que las operaciones se sintetizan y se colocan
@@ -38,7 +38,8 @@ del trabajo: demostrar una inferencia de IA ejecutándose en hardware dedicado d
 recursos modestos.
 
 Por último, la fase de evaluación permitió medir el beneficio de la aceleración. La inferencia en
-FPGA obtuvo un tiempo medio cercano a 2 ms, frente a unos 171 ms de la ejecución del core C++
+FPGA obtuvo un tiempo medio cercano a 2 ms, frente a unos 171 ms de la ejecución del core
+\texttt{C++}
 generado por hls4ml en el ARM. Esto supone una mejora aproximada de 85 veces. Más allá del número
 exacto, lo relevante es que la aceleración se ha medido sobre la placa real e incluyendo el coste de
 comunicación con el IP.
@@ -59,7 +60,7 @@ modelo. Sin embargo, parte del problema venía de cachés de Vivado/Vitis y de v
 IP que seguían apareciendo en la integración.
 
 Otro punto práctico ha sido la importancia de mantener los proyectos ordenados. En un flujo con
-Vivado, Vitis, Vitis HLS, modelos entrenados, IPs generados y scripts auxiliares, es fácil acabar
+Vivado, Vitis, Vitis HLS, modelos entrenados, IP generados y scripts auxiliares, es fácil acabar
 con carpetas repetidas o resultados antiguos mezclados con versiones nuevas. La separación entre
 distintas fases y en cada una de ellas una carpeta con un proyecto Vivado/Vitis, hace que sea más
 fácil de mantener y de explicar.
@@ -67,7 +68,7 @@ fácil de mantener y de explicar.
 \section{Limitaciones}
 
 La principal limitación del sistema es la propia placa. La Zybo Legacy es una plataforma muy útil
-para aprender y prototipar, pero la Zynq-7010 tiene un margen reducido para implementar CNNs. El
+para aprender y prototipar, pero la Zynq Z-7010 tiene un margen reducido para implementar CNNs. El
 modelo final tuvo que ser pequeño y muy ajustado en recursos. Esto afecta directamente a la
 precisión que se puede esperar y limita la complejidad de las imágenes que puede clasificar con
 robustez.
@@ -109,7 +110,7 @@ Desde el punto de vista de la evaluación, el siguiente paso sería probar mucha
 solo casos individuales. Una aplicación que lea imágenes desde una tarjeta SD, o incluso desde una
 cámara, permitiría evaluar el sistema de forma más parecida a un caso de uso real. También sería
 interesante medir consumo energético, ya que una de las razones de usar FPGA en Edge-AI no es solo
-la latencia, sino la eficiencia \citep{sze2017efficientprocessingdeepneural}.
+la latencia, sino la eficiencia energética \citep{sze2017efficientprocessingdeepneural}.
 
 Por último, se podría comparar el acelerador FPGA con una implementación ARM más optimizada, por
 ejemplo usando NEON o librerías pensadas para microcontroladores y procesadores embebidos

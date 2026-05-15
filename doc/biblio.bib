@@ -170,14 +170,14 @@
     simultaneously. To advance datacenter capabilities beyond what commodity server
     designs can provide, we have designed and built a composable, reconfigurable fabric
     to accelerate portions of large-scale software services. Each instantiation of the
-    fabric consists of a 6x8 2-D torus of high-end Stratix V FPGAs embedded into a
+    fabric consists of a 6x8 2-D torus of high-end Stratix V FPGA embedded into a
     half-rack of 48 machines. One FPGA is placed into each server, accessible through
-    PCIe, and wired directly to other FPGAs with pairs of 10 Gb SAS cables. In this
-    paper, we describe a medium-scale deployment of this fabric on a bed of 1,632
-    servers, and measure its efficacy in accelerating the Bing web search engine. We
-    describe the requirements and architecture of the system, detail the critical
-    engineering challenges and solutions needed to make the system robust in the presence
-    of failures, and measure the performance, power, and resilience of the system when
+    PCIe, and wired directly to other FPGA with pairs of 10 Gb SAS cables. In this paper,
+    we describe a medium-scale deployment of this fabric on a bed of 1,632 servers, and
+    measure its efficacy in accelerating the Bing web search engine. We describe the
+    requirements and architecture of the system, detail the critical engineering
+    challenges and solutions needed to make the system robust in the presence of
+    failures, and measure the performance, power, and resilience of the system when
     ranking candidate documents. Under high load, the large-scale reconfigurable fabric
     improves the ranking throughput of each server by a factor of 95% for a fixed latency
     % distribution—or, while maintaining equivalent throughput, reduces the tail latency by 29%.},
@@ -223,14 +223,6 @@
     pages = {65--74},
     publisher = {ACM},
     webpage = {https://arxiv.org/abs/1612.07119}
-  }
-
-  @misc{bnnPynqZybo,
-    author = {{fcaspe}},
-    title = {BNN-PYNQ-ZYBO: QNNs on PYNQ with Zybo-Z7 compatibility},
-    year = {2020},
-    webpage = {https://github.com/fcaspe/BNN-PYNQ-ZYBO},
-    lastaccess = {May, 2026},
   }
 
   @misc{digilentVivadoBoards,
@@ -345,4 +337,12 @@
     primaryClass={cs.NE},
     webpage={https://arxiv.org/abs/1801.06601},
     lastaccess={May, 2026}
+  }
+
+  @misc{cmsisnnRepo,
+    author = {ARM software},
+    title = {CMSIS-NN},
+    year = {2024},
+    webpage = {https://github.com/ARM-software/CMSIS-NN},
+    lastaccess = {May, 2026},
   }

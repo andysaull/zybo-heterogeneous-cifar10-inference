@@ -9,7 +9,8 @@ resultados cumplen los objetivos planteados al inicio del trabajo.
 En primer lugar, se comparan los recursos hardware
 utilizados por una misma operación implementada mediante HLS y mediante VHDL. Después se analiza el
 encaje del acelerador CIFAR-10 dentro de la Zybo Z-7010. Por último, se estudia el tiempo de
-inferencia obtenido en FPGA frente a la ejecución del core C++ generado por hls4ml en el ARM.
+inferencia obtenido en FPGA frente a la ejecución del core \texttt{C++} generado por
+hls4ml en el ARM.
 
 \section{Comparación de recursos entre HLS y VHDL}
 
@@ -51,7 +52,8 @@ reduce mucho el coste de llegar a una primera versión funcional.
 \section{Utilización de recursos del acelerador CIFAR-10}
 
 El resultado más delicado del proyecto fue conseguir que el modelo CIFAR-10 entrase en la Zybo
-Legacy. La Zynq-7010 integra una FPGA pequeña para implementar una red convolucional, por lo que el
+Legacy. La Zynq Z-7010 integra una FPGA pequeña para implementar una red convolucional,
+por lo que el
 diseño estuvo limitado principalmente por el número de LUT disponibles. A lo largo del desarrollo
 se probaron varias configuraciones de modelo y de cuantización hasta encontrar una versión que
 Vivado pudiera colocar y rutear correctamente.
@@ -65,13 +67,13 @@ utilización mostrada en la siguiente tabla:
 
 \begin{table}[h!]
   \centering
-  \begin{tabular}{|l|r|}
+  \begin{tabular}{|l|r|r|}
     \hline
-    \textbf{Recurso} & \textbf{Uso en el diseño final} \\ \hline
-    LUT & 16117 \\ \hline
-    FF & 17917 \\ \hline
-    BRAM & 37,5 \\ \hline
-    DSP & 6 \\ \hline
+    \textbf{Recurso} & \textbf{Uso en el diseño final} & \textbf{Porcentaje de uso} \\ \hline
+    LUT &   16117 & 91.57\% \\ \hline
+    FF &    17917 & 50.90\% \\ \hline
+    BRAM &  37,5  & 62.50\% \\ \hline
+    DSP &   6     & 7.50\%  \\ \hline
   \end{tabular}
   \caption{Utilización de recursos del diseño CIFAR-10 final en la Zybo}
   \label{tab:recursosCifar10Final}
@@ -190,7 +192,8 @@ El objetivo principal de rendimiento era comprobar si la FPGA reducía la latenc
 frente a una ejecución software en el ARM Cortex-A9. Para ello se midieron varias ejecuciones sobre
 la misma imagen y con el mismo temporizador hardware de la plataforma. En esta comparación se usó
 el mismo modelo generado por hls4ml en dos caminos distintos: por un lado, el IP sintetizado e
-integrado en la FPGA. Por el otro, el core C++ generado por hls4ml ejecutado directamente sobre el
+integrado en la FPGA. Por el otro, el core \texttt{C++} generado por hls4ml ejecutado
+directamente sobre el
 ARM \citep{hls4mlDocs}.
 
 La siguiente tabla muestra los tiempos obtenidos:
@@ -203,7 +206,8 @@ La siguiente tabla muestra los tiempos obtenidos:
 FPGA & 2012 $\mu$s & 2008 $\mu$s \\ \hline
 CPU (ARM) & 171215 $\mu$s & 171161 $\mu$s \\ \hline
 \end{tabular}
-\caption{Benchmark de inferencia CIFAR-10 entre acelerador FPGA y core C++ de hls4ml en ARM}
+\caption{Benchmark de inferencia CIFAR-10 entre acelerador FPGA y core \texttt{C++} de
+hls4ml en ARM}
 \label{tab:benchmarkCifar10FpgaArm}
 \end{table}
 
@@ -214,9 +218,11 @@ Con estos datos, la aceleración media observada es:
 \end{equation}
 
 Es decir, la inferencia acelerada en FPGA fue aproximadamente 85 veces más rápida que la ejecución
-del core C++ de hls4ml en el ARM. Este resultado es coherente con la naturaleza de cada ruta. En la
+del core \texttt{C++} de hls4ml en el ARM. Este resultado es coherente con la naturaleza
+de cada ruta. En la
 FPGA, el modelo se convierte en hardware dedicado y puede explotar paralelismo a nivel de
-operaciones y de flujo de datos. En cambio, en el ARM se ejecuta una descripción C++ pensada para
+operaciones y de flujo de datos. En cambio, en el ARM se ejecuta una descripción
+\texttt{C++} pensada para
 ser sintetizada por HLS, no una librería de inferencia optimizada para CPU
 \citep{sze2017efficientprocessingdeepneural}.
 
@@ -227,12 +233,29 @@ inferencia completa desde el punto de vista de la aplicación bare-metal. Aun in
 de comunicación, el tiempo se mantiene alrededor de los 2 ms.
 
 La ruta ARM, por su parte, queda penalizada por varios motivos. El core generado por hls4ml utiliza
-tipos de dato de precisión fija, estructuras tipo \texttt{hls::stream} y plantillas C++ orientadas a
+tipos de dato de precisión fija, estructuras tipo \texttt{hls::stream} y plantillas
+\texttt{C++} orientadas a
 describir hardware. Todas estas construcciones tienen sentido cuando el código se va a transformar
 en un circuito, pero no son la forma más eficiente de ejecutar una red neuronal en un Cortex-A9.
 Por esta razón, el resultado no debe interpretarse como una comparación contra la mejor
 implementación posible en CPU, sino como una comparación entre el acelerador hardware y la
 ejecución software directa del mismo flujo hls4ml.
+
+Si la comparación se realizase con una implementación SW optimizada, el tiempo de ejecución CPU
+se vería reducido de forma apreciable.
+Podemos intentar deducir la mejora de rendimiento que tendría la ejecución SW tomando como
+referencia \citep{lai2018cmsisnnefficientneuralnetwork}, donde muestran una mejora de rendimiento
+de hasta 4.6 veces utilizando un kernel CMSIS-NN \citep{cmsisnnRepo} en una CNN entrenada
+en el dataset CIFAR-10, de la misma manera que se hace en este trabajo.
+Estos resultados no pueden trasladarse de manera directa a este proyecto, ya que el procesador y
+la arquitectura del modelo son distintos.
+Sin embargo, sí permiten estimar hasta qué punto es la mejora de una implementación SW optimizada
+para un caso de ejecución similar.
+Extrapolando esos datos, el tiempo de ejecución de nuestra inferencia en SW pasaría a
+ser de aproximadamente 37000$\mu$s, todavía por encima de los aproximadamente 2000$\mu$s medidos
+en la FPGA, que resultaría en una mejora de rendimiento de aproximadamente 18.5 veces.
+Por lo tanto, la implementación hardware seguiría manteniendo una ventaja clara respecto a una
+ejecución en CPU.
 
 Además del tiempo de ejecución, también se observaron diferencias en los valores de salida. Para
 la imagen de prueba externa de un perro, ambas rutas predijeron correctamente la clase
@@ -267,7 +290,8 @@ Las diferencias entre FPGA y ARM también son razonables desde el punto de vista
 ambas rutas parten del mismo modelo entrenado, no ejecutan exactamente la misma implementación
 aritmética. La FPGA trabaja con el hardware generado por Vitis HLS, con los anchos de palabra,
 redondeos y comportamientos de desbordamiento definidos durante la síntesis. El ARM, en cambio,
-ejecuta una versión C++ del modelo mediante tipos software que emulan precisión fija. Pequeñas
+ejecuta una versión \texttt{C++} del modelo mediante tipos software que emulan precisión
+fija. Pequeñas
 diferencias de redondeo, truncado, orden de acumulación o conversión entre tipos pueden propagarse
 a través de las capas convolucionales y modificar la distancia entre los logits finales.
 
@@ -292,7 +316,8 @@ ello, conseguir una inferencia en torno a 2 ms en la FPGA confirma que el uso de
 es una vía efectiva para reducir latencia en sistemas empotrados.
 
 La evaluación también deja una enseñanza importante: en proyectos HLS no basta con que el modelo
-sea correcto a nivel de código C++. La versión realmente desplegada es el hardware generado, y por
+sea correcto a nivel de código \texttt{C++}. La versión realmente desplegada es el
+hardware generado, y por
 eso hay que analizar recursos, temporización, comunicación con memoria y comportamiento numérico
 una vez integrado en la placa. Esta parte es una pieza clave para poder confiar en los resultados
 del sistema completo.

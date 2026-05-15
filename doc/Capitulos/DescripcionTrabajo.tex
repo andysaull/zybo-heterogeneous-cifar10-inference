@@ -6,14 +6,14 @@ aislar posibles fallos. A continuación, se detalla la metodología de diseño, 
 cinco fases técnicas, partiendo desde la configuración inicial hasta la inferencia del
 modelo neuronal y su evaluación.
 
-\section{Configuración del entorno y preparación (Fase 1)}
+\section{\nohyphens{Configuración del entorno y preparación\\(Fase~1)}}
 Antes de comenzar con la lógica del proyecto, es imperativo establecer un entorno de
 trabajo sólido. Las herramientas seleccionadas son AMD Vivado (para el diseño hardware) y
-AMD Vitis (para el desarrollo del software en C/C++).
+AMD Vitis (para el desarrollo del software en C/\texttt{C++}).
 Esta primera toma de contacto tendrá como fin crear una aplicación funcional básica para
 comprobar el correcto funcionamiento del entorno de trabajo, comunicación con la placa de
 desarrollo y comprobación de ejecución.
-La lógica programable se configurará para encender unos LEDs con unos pulsadores. Con
+La lógica programable se configurará para encender unos LED con unos pulsadores. Con
 esto comprobaremos de forma fácil que la parte FPGA de la placa se llega a programar y
 que es independiente de la CPU.
 Después el sistema de procesamiento (PS) tendrá que mostrar unos mensajes por la terminal
@@ -25,40 +25,40 @@ hay comunicación por el puerto serie para la terminal.
 Los pasos iniciales son:
 
 \begin{enumerate}
-  \item \textbf{Instalación de Board Files y constraints:} Descargar los archivos de
-    definición de la placa Zybo Zynq-7010 desde el repositorio oficial de Digilent
+  \item \textbf{Instalación de Board Files y constraints:} descargar los archivos de
+    definición de la placa Zybo Zynq Z-7010 desde el repositorio oficial de Digilent
     \citep{digilentVivadoBoards} e instalarlos en Vivado.
     Esto preconfigura los relojes, las memorias DDR y los pines
     del SoC específicos de esta placa.
-    Además necesitamos un fichero de constraints para que Vivado sepa que pines físicos
+    Además necesitamos un fichero de constraints para que Vivado sepa qué pines físicos
     vamos a utilizar y de qué manera.
     Este paso nos sirve para el resto de las implementaciones que haremos.
-  \item \textbf{Diseño del Sistema Base:} En Vivado, se crea un Block Design donde se
-    instancia el IP "ZYNQ7 Processing System". Se ejecuta la automatización de bloques
-    (Block Automation) para aplicar la configuración de la Zybo. Se añade un bloque "AXI
-    GPIO" conectado a los LEDs de la placa.
-  \item \textbf{Generación y Exportación:} Se genera el Bitstream (archivo binario que
+  \item \textbf{Diseño del Sistema Base:} en Vivado, se crea un Block Design donde se
+    instancia el IP <<ZYNQ7 Processing System>>. Se ejecuta la automatización de bloques
+    (Block Automation) para aplicar la configuración de la Zybo. Se añade un bloque <<AXI
+    GPIO>> conectado a los LED de la placa.
+  \item \textbf{Generación y Exportación:} se genera el Bitstream (archivo binario que
     configura la FPGA) y se exporta la plataforma hardware (.xsa).
-  \item \textbf{Validación Software:} En Vitis, se crea un proyecto de aplicación
+  \item \textbf{Validación Software:} en Vitis, se crea un proyecto de aplicación
     baremetal (sin sistema operativo). Se escribe un código sencillo en C que imprime
-    texto por el puerto serie (UART) y hace parpadear los LEDs mediante registros
+    texto por el puerto serie (UART) y hace parpadear los LED mediante registros
     AXI-Lite, demostrando que el procesador y la FPGA están vivos y comunicándose.
 \end{enumerate}
 
-\section{Comunicación PS-PL (Fase 2)}
+\section{\nohyphens{Comunicación PS-PL (Fase~2)}}
 Para el proyecto de aceleración, la CPU no puede enviar datos a la FPGA dato a dato. Se
 necesita un canal directo a la memoria RAM.
 
 \begin{enumerate}
-  \item \textbf{Habilitación de Puertos HP:} En Vivado, se modifica la configuración del
-    bloque Zynq para activar un puerto esclavo "High Performance" (S\_AXI\_HP0).
-  \item \textbf{Integración del IP AXI DMA:} Se añade el bloque "AXI Direct Memory
-    Access". Se configura deshabilitando la opción Scatter-Gather para mantener el diseño
+  \item \textbf{Habilitación de Puertos HP:} en Vivado, se modifica la configuración del
+    bloque Zynq para activar un puerto esclavo <<High Performance>> (S\_AXI\_HP0).
+  \item \textbf{Integración del IP AXI DMA:} se añade el bloque <<AXI Direct Memory
+    Access>>. Se configura deshabilitando la opción Scatter-Gather para mantener el diseño
     simple inicialmente \citep{scatterGatherMode}.
-  \item \textbf{Loopback de Prueba:} Para validar el DMA antes de introducir algoritmos
+  \item \textbf{Loopback de Prueba:} para validar el DMA antes de introducir algoritmos
     complejos, se conecta el puerto de salida del DMA (M\_AXIS\_MM2S) directamente a su
     puerto de entrada (S\_AXIS\_S2MM) mediante un bloque FIFO.
-  \item \textbf{Software del DMA:} En Vitis, se configuran las cachés (usando
+  \item \textbf{Software del DMA:} en Vitis, se configuran las cachés (definiendo\\
       \texttt{Xil\_DCacheFlushRange} y \texttt{Xil\_DCacheInvalidateRange} para garantizar
       la coherencia de
     los datos entre la caché del ARM y la memoria principal) y se lanzan transferencias
@@ -66,24 +66,24 @@ necesita un canal directo a la memoria RAM.
     forma autónoma.
 \end{enumerate}
 
-\section{Desarrollo del acelerador base en HLS: multiplicación de matrices (Fase 3)}
+\section{\nohyphens{Desarrollo del acelerador base en HLS:\\multiplicación de matrices (Fase~3)}}
 En esta fase del proyecto se ha llevado a cabo el diseño, integración y evaluación de un
 acelerador hardware dedicado a la multiplicación de matrices, utilizando metodologías de
 codiseño HW/SW. El objetivo principal ha sido utilizar la FPGA con una tarea altamente
 paralelizable y cuantificar la mejora de rendimiento obtenida enfrentando los resultados
 de acelerar el cálculo con la FPGA contra realizar el cálculo de forma secuencial en SW.
 
-\subsection{Diseño del acelerador mediante Síntesis de Alto Nivel (HLS)}
+\subsection{Diseño del acelerador mediante Síntesis de alto nivel (HLS)}
 El desarrollo del núcleo IP se ha realizado utilizando la herramienta Vitis HLS,
-permitiendo describir el comportamiento del hardware a partir de un algoritmo en C++.
+permitiendo describir el comportamiento del hardware a partir de un algoritmo en \texttt{C++}.
 Para maximizar el rendimiento del silicio generado, se han aplicado directivas de
 optimización (Pragmas):
 
 \begin{itemize}
-  \item \textbf{Pipeline (\#pragma HLS PIPELINE):} Implementado en los bucles internos
+  \item \textbf{Pipeline (\#pragma HLS PIPELINE):} implementado en los bucles internos
     para permitir el solapamiento de instrucciones, reduciendo el intervalo de iniciación
     a un ciclo de reloj y maximizando el throughput de la ruta de datos.
-  \item \textbf{Unroll (\#pragma HLS UNROLL):} Aplicado para desenrollar total o
+  \item \textbf{Unroll (\#pragma HLS UNROLL):} aplicado para desenrollar total o
     parcialmente las operaciones de multiplicación y acumulación (MAC), forzando a la
     herramienta de síntesis a instanciar múltiples bloques DSP (Digital Signal
     Processors) operando en paralelo.
@@ -102,7 +102,7 @@ Para evitar cuellos de botella y bloqueos en el bus del sistema, se ha diseñado
 arquitectura de memoria con separación estricta de dominios:
 
 \begin{itemize}
-  \item El canal de lectura (MM2S) del DMA se ha enrutado de forma exclusiva a través del
+  \item El canal de lectura (MM2S) del DMA se ha dirigido de forma exclusiva a través del
     puerto de alto rendimiento S\_AXI\_HP0 del Zynq.
   \item El canal de escritura (S2MM) del DMA se ha canalizado independientemente a través
     del puerto S\_AXI\_HP1.
@@ -113,18 +113,19 @@ transferencia bidireccional continua de matrices.
 
 \subsection{Implementación software y coherencia de caché}
 El control del sistema se ha desarrollado mediante una aplicación bare-metal en lenguaje
-C/C++ utilizando Vitis IDE. El código ejecuta la inicialización de los controladores de
+\texttt{C}/\texttt{C++} utilizando Vitis IDE. El código ejecuta la inicialización de los
+controladores de
 hardware y gestiona las secuencias de disparo del DMA y del núcleo HLS.
 
 Un factor crítico abordado en la capa de software ha sido la coherencia de caché. Dado
 que el controlador DMA accede directamente a la memoria física y no tiene visibilidad
 sobre las cachés L1/L2 del procesador ARM, ha sido imperativo ejecutar rutinas de
-limpieza (Xil\_DCacheFlushRange) antes de las transmisiones e invalidaciones
-(Xil\_DCacheInvalidateRange) previas a las lecturas, asegurando así la integridad de los
+limpieza (\texttt{Xil\_DCacheFlushRange}) antes de las transmisiones e invalidaciones
+(\texttt{Xil\_DCacheInvalidateRange}) previas a las lecturas, asegurando así la integridad de los
 operandos y resultados \citep{zynq7000Manual}.
 
 \subsection{Evaluación de rendimiento (Benchmarking)}
-Para cuantificar la ganancia de velocidad (speedup) real del sistema, se ha leido de
+Para cuantificar la ganancia de velocidad (speedup) real del sistema, se han leído de
 forma directa los registros de hardware del Global Timer de 64 bits integrado en el
 procesador Cortex-A9. Esta técnica evita la sobrecarga de las librerías de tiempo
 estándar de C y proporciona una resolución del orden de nanosegundos (basada en el reloj
@@ -134,16 +135,16 @@ Los resultados de las pruebas de rendimiento demuestran un comportamiento dual
 dependiente de la carga de datos:
 
 \begin{itemize}
-  \item \textbf{Para matrices de dimensiones reducidas (N = 4):} La ejecución puramente
+  \item \textbf{Para matrices de dimensiones reducidas (N = 4):} la ejecución puramente
     en software (CPU) presenta una latencia menor. Esto se debe al overhead o
     penalización temporal implícita en la configuración de los registros AXI-Lite del
     DMA, el vaciado de las cachés y la latencia propia del bus de interconexión física.
     Para un volumen de datos tan pequeño, el tiempo de comunicación supera al tiempo de cómputo.
-  \item \textbf{Para matrices escaladas (N = 32):} A medida que la complejidad
+  \item \textbf{Para matrices escaladas (N = 32):} a medida que la complejidad
     computacional del algoritmo crece de forma exponencial, el modelo de ejecución
     secuencial del procesador ARM sufre una degradación de rendimiento. Por el contrario,
     el núcleo acelerador en la FPGA absorbe esta carga gracias al paralelismo masivo de
-    los DSPs instanciados. En este escenario, el tiempo de procesamiento hardware diluye
+    los DSP instanciados. En este escenario, el tiempo de procesamiento hardware diluye
     completamente el overhead de la comunicación por bus, arrojando un speedup
     significativo y validando empíricamente la utilidad de la aceleración por hardware en
     operaciones algebraicas intensivas.
@@ -161,11 +162,11 @@ dependiente de la carga de datos:
   \label{tab:resultadosMatrices}
 \end{table}
 
-\section{Diseño e implementación del modelo de IA (Fase 4)}
+\section{\nohyphens{Diseño e implementación del modelo de IA\\(Fase~4)}}
 Aunque el planteamiento inicial contemplaba un modelo Perceptrón Multicapa (MLP) para el
 conjunto de datos MNIST (28x28 píxeles en escala de grises), la disponibilidad de herramientas
 avanzadas de Síntesis de Alto Nivel (HLS) permitió elevar el alcance del proyecto.
-El diseño pivotó hacia una Red Neuronal Convolucional (CNN) capaz de clasificar imágenes a
+El diseño derivó hacia una Red Neuronal Convolucional (CNN) capaz de clasificar imágenes a
 color de 32x32x3 píxeles correspondientes al dataset CIFAR-10.
 
 Dado que la plataforma hardware objetivo es la placa Zybo la cual posee recursos lógicos
@@ -197,8 +198,8 @@ de imágenes y, al mismo tiempo, mantener el tamaño del circuito dentro de unos
 Durante el desarrollo se probaron varias combinaciones de canales y precisiones.
 El primer enfoque que cabía en la placa era demasiado pequeño y ofrecía resultados
 de clasificación poco útiles. Después se intentó aumentar el tamaño del modelo y forzar un
-mayor uso de DSPs, pero en la práctica el diseño empezó a fallar en implementación por exceso
-de LUTs o por problemas de empaquetado de \textit{slices}. Finalmente se encontró una
+mayor uso de DSP, pero en la práctica el diseño empezó a fallar en implementación por exceso
+de LUT o por problemas de empaquetado de \textit{slices}. Finalmente se encontró una
 variante intermedia con la siguiente distribución de canales:
 
 \begin{center}
@@ -206,16 +207,16 @@ variante intermedia con la siguiente distribución de canales:
 \end{center}
 
 Esta versión consiguió un equilibrio más razonable: el modelo seguía siendo suficientemente
-pequeño para entrar en la Zynq-7010, pero mantenía una precisión aceptable
+pequeño para implementarse en la Zynq Z-7010, pero mantenía una precisión aceptable
 para el alcance del proyecto.
 
 \subsection{Conversión del modelo a HLS}
 Una vez obtenido el modelo en formato *.h5, se utilizó hls4ml para traducir la red neuronal
-a código C++ compatible con Vitis HLS. Este paso no consiste solo en convertir la topología
+a código \texttt{C++} compatible con Vitis HLS. Este paso no consiste solo en convertir la topología
 de Keras, sino también en decidir cómo se representarán los datos dentro del hardware.
 
 El modelo original trabaja en coma flotante, pero esto no es adecuado para una FPGA pequeña
-como la Zybo. Por este motivo se empleó aritmética de punto fijo mediante
+como la Zynq Z-7010. Por este motivo se empleó aritmética de punto fijo mediante
 tipos \textit{ap\_fixed} \citep{amdPrecisionFixedPoint}.
 La entrada y los pesos se redujeron a formatos de pocos bits, mientras
 que las acumulaciones internas se dejaron con algo más de margen para evitar
@@ -223,21 +224,21 @@ pérdidas graves de precisión.
 A nivel de configuración, se utilizó una estrategia orientada a recursos:
 
 \begin{itemize}
-  \item \textbf{Strategy = Resource:} Prioriza reutilizar operadores frente a generar
+  \item \textbf{Strategy = Resource:} prioriza reutilizar operadores frente a generar
     más paralelismo del necesario.
-  \item \textbf{ReuseFactor elevado:} Permite que las mismas unidades de cálculo se
+  \item \textbf{ReuseFactor elevado:} permite que las mismas unidades de cálculo se
     reutilicen varias veces, reduciendo el área a cambio de aumentar la latencia.
-  \item \textbf{ConvImplementation = LineBuffer:} Hace que las convoluciones trabajen con
+  \item \textbf{ConvImplementation = LineBuffer:} hace que las convoluciones trabajen con
     buffers de línea, una técnica más adecuada para procesar imágenes en flujo.
-  \item \textbf{FIFO\_opt activado:} Reduce el tamaño de algunas colas internas
+  \item \textbf{FIFO\_opt activado:} reduce el tamaño de algunas colas internas
     generadas por hls4ml.
 \end{itemize}
 
 También se probó a forzar que más multiplicaciones se implementasen usando bloques DSP.
-Aunque en teoría esto podía liberar LUTs, en este caso no resultó ser la solución principal.
+Aunque en teoría esto podía liberar LUT, en este caso no resultó ser la solución principal.
 Al tratarse de multiplicaciones pequeñas, con bastante reutilización y mucha lógica de control
-alrededor, mover operaciones a DSP no ha reducido el uso total de LUTs. Por ello, la versión
-final se generó sin forzar explícitamente el uso de DSPs para todas las multiplicaciones.
+alrededor, mover operaciones a DSP no ha reducido el uso total de LUT. Por ello, la versión
+final se generó sin forzar explícitamente el uso de DSP para todas las multiplicaciones.
 
 \subsection{Adaptación del IP core para AXI DMA}
 El código generado por hls4ml no se conectó directamente al sistema, sino que se
@@ -271,9 +272,9 @@ la FPGA realiza el cálculo intensivo.
 El \textit{Block Design} integra los siguientes bloques principales:
 
 \begin{itemize}
-  \item \textbf{ZYNQ7 Processing System:} Contiene el procesador ARM Cortex-A9, la memoria DDR
+  \item \textbf{ZYNQ7 Processing System:} contiene el procesador ARM Cortex-A9, la memoria DDR
     y los puertos AXI necesarios para controlar el sistema.
-  \item \textbf{AXI DMA:} Mueve datos entre la memoria DDR y el acelerador, evitando que
+  \item \textbf{AXI DMA:} mueve datos entre la memoria DDR y el acelerador, evitando que
     la CPU tenga que escribir cada dato de forma individual.
   \item \textbf{cifar10\_axis\_wrapper:} IP core generado con Vitis HLS que ejecuta
     la inferencia del modelo CIFAR-10.
@@ -292,9 +293,9 @@ al canal S2MM del DMA. La configuración y el control del DMA y del IP se realiz
 desde el procesador mediante AXI4-Lite.
 
 Uno de los puntos más delicados de esta fase fue el ajuste de recursos.
-La Zybo Zynq-7010 dispone de 17600 LUTs, por lo que pequeños cambios en la arquitectura
+La Zynq Z-7010 dispone de 17600 LUT, por lo que pequeños cambios en la arquitectura
 del modelo podían hacer que el bitstream dejase de generarse. Se probaron varias variantes
-que fallaban por exceso de LUTs o por imposibilidad de empaquetar correctamente las instancias
+que fallaban por exceso de LUT o por imposibilidad de empaquetar correctamente las instancias
 en los slices.
 
 \subsection{Aplicación bare-metal en Vitis}
@@ -329,7 +330,7 @@ La gestión de caché es crítica, si el procesador conserva datos antiguos en c
 leer una imagen incorrecta o el software puede imprimir resultados que no corresponden
 con la inferencia recién ejecutada.
 Por eso se utilizan llamadas explícitas a
-\textit{Xil\_DCacheFlushRange} e \textit{Xil\_DCacheInvalidateRange}.
+\texttt{Xil\_DCacheFlushRange} e \texttt{Xil\_DCacheInvalidateRange}.
 
 \subsection{Interpretación de la salida}
 El modelo no devuelve directamente el nombre de una clase, sino 10 valores numéricos llamados
@@ -366,11 +367,12 @@ Tras esta limpieza, la ejecución sobre la placa empezó a devolver logits
 coherentes con el modelo entrenado.
 
 Otro problema muy común es el límite de caracteres de Windows para las rutas de ficheros.
-Cuando una ruta supera los 250 caracteres, la build de Vitis o Vivado falla, teniendo que mover
-algunos ficheros a rutas más cortas.
-
-Como algunos ficheros autogenerados también superan este límite, siendo imposible de mover
-estos ficheros a rutas más cortas, la solución ha sido utilizar el comando \textit{\textbf{subst}}
+Cuando una ruta supera los 256 caracteres, la build de Vitis o Vivado falla.
+Algunas herramientas de Vivado/Vitis generan ficheros que superan este límite, siendo imposible
+de mover estos ficheros a rutas más cortas.
+Una alternativa habría sido trasladar el espacio de trabajo a Linux, sin embargo, dado que todo
+el entorno estaba estaba configurado sobre Windows y las herramientas funcionaban correctamente,
+se optó por utilizar el comando \textit{\textbf{subst}}
 para asociar la ruta del proyecto de Vivado/Vitis a una letra de unidad de Windows, haciendo
 la ruta lo más corta posible.
 
@@ -434,11 +436,11 @@ coherencia de caché y lanzan la transferencia de entrada y salida. La aplicaci�
 palabras Q16.16 por el canal MM2S del DMA y recibe 10 palabras de salida, una por clase, por el
 canal S2MM.
 
-La medida temporal se hizo con el Global Timer del Zynq-7010. Este temporizador permite
+La medida temporal se hizo con el Global Timer del Zynq Z-7010. Este temporizador permite
 medir tanto la ruta acelerada como la ruta software con el mismo criterio. En la ejecución FPGA se
 mide el tiempo total de una inferencia desde el punto de vista de la aplicación: limpieza de salida,
 coherencia de caché, DMA, ejecución del IP y lectura final del buffer. En la ejecución sobre el ARM
-se mide el tiempo de ejecución del core C++ generado por hls4ml sobre el Cortex-A9.
+se mide el tiempo de ejecución del core \texttt{C++} generado por hls4ml sobre el Cortex-A9.
 
 Para lograr este objetivo, se ha creado un nuevo espacio para el proyecto de Vitis,
 \texttt{5\_cifar10\_benchmark}, utilizando el fichero XSA y la implementación sobre FPGA de la fase

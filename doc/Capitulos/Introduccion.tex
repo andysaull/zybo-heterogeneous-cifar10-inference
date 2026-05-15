@@ -9,16 +9,16 @@ grandes centros de datos en la nube, hoy la tendencia apunta hacia el concepto d
 Edge-AI: llevar la inteligencia directamente al extremo, al dispositivo local.
 ¿Qué logramos con esto? Reducir de forma drástica la latencia, blindar la privacidad del
 usuario al eliminar el envío de información por la red y aliviar la carga de las redes de
-comunicación. \citep{zhou2019edgeintelligencepavingmile}.
+comunicación \citep{zhou2019edgeintelligencepavingmile}.
 
-Aquí es donde entran en juego las FPGAs como pieza clave.
-A diferencia de las CPUs y GPUs tradicionales que procesan la información de forma
-secuencial o en paralelo pero de forma rígida, las FPGAs permiten diseñar arquitecturas
+Aquí es donde entran en juego las FPGA como pieza clave.
+A diferencia de las CPU y GPU tradicionales que procesan la información de forma
+secuencial o en paralelo pero de forma rígida, las FPGA permiten diseñar arquitecturas
 de hardware como si fueran un lienzo en blanco, que optimizan el flujo de datos y el
 paralelismo. Esto es importante para superar barreras físicas
-actuales como el "Muro de Potencia" (Power Wall), donde seguir subiendo la frecuencia de
-los procesadores convencionales ha dejado de ser viable a nivel energético.
-\citep{10.1145/3282307}
+actuales como el <<Power Wall>>, donde seguir subiendo la frecuencia de
+los procesadores convencionales ha dejado de ser viable a nivel energético
+\citep{10.1145/3282307}.
 
 Por todo ello, este Trabajo de Fin de Grado se centra en explorar a fondo el co-diseño
 hardware-software.
@@ -44,27 +44,27 @@ siempre ha rodeado al diseño puramente hardware.
 
 \section{Objetivos}
 El objetivo general de este trabajo es claro: diseñar, implementar y evaluar un sistema
-empotrado heterogéneo basado en el SoC Zynq-7010 capaz de acelerar la inferencia de un
+empotrado heterogéneo basado en el SoC Zynq Z-7010 capaz de acelerar la inferencia de un
 modelo ligero de Inteligencia Artificial.
 Derivado a esto, se quiere cuantificar las mejoras de rendimiento en hardware respecto a
 la ejecución del mismo flujo de inferencia sobre el microprocesador ARM.
 Para alcanzar esta meta, se definen los siguientes objetivos específicos:
 
 \begin{enumerate}
-  \item \textbf{Puesta en marcha de la plataforma:} Configurar desde cero el entorno de
+  \item \textbf{Puesta en marcha de la plataforma:} configurar desde cero el entorno de
     desarrollo Vivado/Vitis para la placa Digilent Zybo, validando el funcionamiento
     independiente del microprocesador ARM Cortex-A9 y de la FPGA.
-  \item \textbf{Diseño de la infraestructura de comunicación:} Implementar canales de
+  \item \textbf{Diseño de la infraestructura de comunicación:} implementar canales de
     comunicación de alto ancho de banda entre el Sistema de Procesamiento y la Lógica
     Programable, utilizando el protocolo AMBA AXI y controladores de Acceso Directo a Memoria (DMA).
-  \item \textbf{Aceleración de un cálculo base:} Escribir en C++ y sintetizar a hardware
+  \item \textbf{Aceleración de un cálculo base:} escribir en \texttt{C++} y sintetizar a hardware
     (HLS) un IP core básico de álgebra lineal (multiplicación de matrices) para validar
     el flujo de datos entre procesador y FPGA.
-  \item \textbf{Implementación de IA en recursos limitados:} Adaptar un modelo de red
+  \item \textbf{Implementación de IA en recursos limitados:} adaptar un modelo de red
     neuronal (Red Neuronal Convolucional CIFAR-10) al conjunto reducido de recursos de la
-    Zynq-7010, generando su hardware equivalente y desarrollando el software de control
+    Zynq Z-7010, generando su hardware equivalente y desarrollando el software de control
     que le suministre los datos de entrada.
-  \item \textbf{Evaluación de rendimiento (Benchmarking):} Realizar una comparativa de
+  \item \textbf{Evaluación de rendimiento (Benchmarking):} realizar una comparativa de
     tiempos de ejecución (latencia) lanzando la inferencia del modelo neuronal únicamente
     en la CPU frente a la ejecución asistida por la FPGA.
 \end{enumerate}
@@ -72,25 +72,26 @@ Para alcanzar esta meta, se definen los siguientes objetivos específicos:
 \section{Plan de trabajo}
 Para organizar el esfuerzo y cumplir los hitos, el proyecto se divide en estas fases incrementales:
 
-\textbf{Fase 1.} Investigación y Familiarización: Revisión del estado del arte en sistemas Zynq,
-buses AXI y Síntesis de Alto Nivel. Instalación de herramientas (Vivado, Vitis) y
-ejecución de "Hola Mundo" en la placa.
+\textbf{Fase 1.} Investigación y familiarización: revisión del estado del arte en sistemas Zynq,
+buses AXI y Síntesis de alto nivel. Instalación de herramientas (Vivado, Vitis) y
+ejecución de <<Hola Mundo>> en la placa.
 
-\textbf{Fase 2.} Comunicación PS-PL: Configuración de registros de control mediante AXI-Lite y
+\textbf{Fase 2.} Comunicación PS-PL: configuración de registros de control mediante AXI-Lite y
 configuración del subsistema de memoria con AXI DMA. Desarrollo de drivers en C
 (baremetal) para mover datos desde la RAM a la FPGA.
 
-\textbf{Fase 3.} Desarrollo del Acelerador Base en HLS: Programación en C/C++ de una
+\textbf{Fase 3.} Desarrollo del acelerador base en HLS: programación en
+\texttt{C}/\texttt{C++} de una
 multiplicación de matrices. Uso de pragmas HLS (PIPELINE, UNROLL) para optimizar el
 hardware. Integración del bloque IP generado en Vivado con el DMA.
 
-\textbf{Fase 4.} Diseño e implementación del modelo de IA: Entrenamiento y/o exportación de un
+\textbf{Fase 4.} Diseño e implementación del modelo de IA: entrenamiento y/o exportación de un
 modelo de Red Neuronal Convolucional para clasificación de imágenes CIFAR-10. Generación
 del acelerador hardware de la red neuronal y conexión en el diseño de Vivado.
 
-\textbf{Fase 5.} Pruebas y Benchmarking: Ejecución de la inferencia en FPGA y comparación con
+\textbf{Fase 5.} Pruebas y benchmarking: ejecución de la inferencia en FPGA y comparación con
 el core generado por hls4ml ejecutado en el ARM. Toma de métricas de rendimiento y verificación de
 resultados.
 
-\textbf{Fase 6.} Redacción de la Memoria: Documentación del proceso, análisis de los resultados
+\textbf{Fase 6.} Redacción de la memoria: documentación del proceso, análisis de los resultados
 obtenidos y redacción final del documento del TFG.
