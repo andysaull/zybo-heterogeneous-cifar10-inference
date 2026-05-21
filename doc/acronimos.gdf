@@ -1,27 +1,101 @@
-% Fichero con acrónimos para su uso con GlossTeX
+% Fichero con acrï¿½nimos para su uso con GlossTeX
 %
-% El listado de acrónimos funciona de manera similar a las referencias
-% bibliográficas. Este  fichero es equivalente por tanto  al .bib, con
-% el listado de  los acrónimos disponibles. A lo  largo del documento,
+% El listado de acrï¿½nimos funciona de manera similar a las referencias
+% bibliogrï¿½ficas. Este  fichero es equivalente por tanto  al .bib, con
+% el listado de  los acrï¿½nimos disponibles. A lo  largo del documento,
 % cuando se  utilice alguno  de ellos, se  referencia para  indicar al
-% sistema que queremos que dicho  acrónimo aparezca en el glosario. En
-% contra de  lo que ocurre con  la bibliografía, el  texto original no
-% sufre ninguna modificación.
+% sistema que queremos que dicho  acrï¿½nimo aparezca en el glosario. En
+% contra de  lo que ocurre con  la bibliografï¿½a, el  texto original no
+% sufre ninguna modificaciï¿½n.
 %
 % Las entradas son:
 % @entry{<etiqueta>[,<item>[,<forma larga>]]} [<texto>]
 %
-% La etiqueta es el  nombre del acrónimo (equivalente a la etiqueta en
+% La etiqueta es el  nombre del acrï¿½nimo (equivalente a la etiqueta en
 % BibTeX) que luego se utiliza para "referenciarlo" en el texto.
 
-% Para  que  la  generación   en  Release  con  el  Makefile  funcione
-% correctamente, necesitarás  al menos tener  referenciado un acrónimo
-% dentro del  texto.  Si  no quieres usar  acrónimos, o de  momento no
+% Para  que  la  generaciï¿½n   en  Release  con  el  Makefile  funcione
+% correctamente, necesitarï¿½s  al menos tener  referenciado un acrï¿½nimo
+% dentro del  texto.  Si  no quieres usar  acrï¿½nimos, o de  momento no
 % tienes ninguno  referenciado, basta con que no  definas la constante
 % \acronimosEnRelease en config.tex
 
-@entry{CVS, , \emph{Control Version System}, Sistema de Control de Versiones}
+\begin{acronym}[PC2]
+    
+@entry{FPGA, , \emph{Field Programmable Gate Array}, Matriz de Puerta Programable en Campo}
 
-@entry{GPL, , \emph{General Public License}, Licencia Pública General de GNU}
+@entry{ARM, , \emph{Advanced RISC Machine}, MÃ¡quina avanzada RISC(Computador con Conjunto Reducido de Instrucciones)}
 
-@entry{PC2, PC$^2$, \emph{Programming Contest Control}}
+@entry{CPU, , \emph{Central Processing Unit}, Unidad Central de Procesamiento}
+
+@entry{GPU, , \emph{Graphics Processing Unit}, Unidad de Procesamiento GrÃ¡fico}
+
+@entry{AXI, , \emph{Advanced eXtensible Interface}, Inferfaz Avanzada eXtensible}
+
+@entry{DMA, , \emph{Direct Memory Access}, Acceso Directo a Memoria}
+
+@entry{HLS, , \emph{High Level Synthesis}, SÃ­ntesis de Alto Nivel}
+
+@entry{IP, , \emph{Intellectual Property}, Propiedad Intelectual}
+
+@entry{SoC, , \emph{System on a Chip}, Sistema en Chip}
+
+@entry{CIFAR, , \emph{Canadian Institute For Advanced Research}, Base de datos del Instituto Canadiense de InvestigaciÃ³n Avanzada}
+
+@entry{DSP, , \emph{Digital Signal Processor}, Procesador de SeÃ±ales Digitales}
+
+@entry{LUT, , \emph{Look-Up Table}, Tabla de BÃºsqueda}
+
+@entry{FF, , \emph{Flip-Flop}, Biestable}
+
+@entry{BRAM, , \emph{Block Random Access Memory}, Bloque de Memoria de Acceso Aleatorio}
+
+@entry{ASIC, , \emph{Application Specific Integrated Circuit}, Circuito Integrado para Aplicaciones EspecÃ­ficas}
+
+@entry{RAM, , \emph{Random Access Memory}, Memoria de Acceso Aleatorio}
+
+@entry{DDR, , \emph{Double Data Rate}, Memoria con Tasa de Datos Doble}
+
+@entry{GPIO, , \emph{General Purpose Input/Output}, Entrada/Salida de PropÃ³sito General}
+
+@entry{LED, , \emph{Light Emitting Diode}, Diodo Emisor de Luz}
+
+@entry{UART, , \emph{Universal Asynchronous Receiver-Transmitter}, Transmisor-Receptor AsÃ­ncrono Universal}
+
+@entry{SD, , \emph{Secure Digital}, Tarjeta de memoria Secure Digital}
+
+@entry{AMBA, , \emph{Advanced Microcontroller Bus Architecture}, Arquitectura Avanzada de Bus para Microcontroladores}
+
+@entry{PS, , \emph{Processing System}, Sistema de Procesamiento}
+
+@entry{PL, , \emph{Programmable Logic}, LÃ³gica Programable}
+
+@entry{HP, , \emph{High Performance}, Alto Rendimiento}
+
+@entry{RTL, , \emph{Register-Transfer Level}, Nivel de Transferencia de Registros}
+
+@entry{XSA, , \emph{Xilinx Support Archive}, Archivo de Soporte Xilinx}
+
+@entry{MM2S, , \emph{Memory Map to Stream}, Mapa de Memoria a Stream}
+
+@entry{S2MM, , \emph{Stream to Memory Map}, Stream a Mapa de Memoria}
+
+@entry{VHDL, , \emph{VHSIC Hardware Description Language}, Lenguaje de DescripciÃ³n Hardware VHSIC}
+
+@entry{SW, , \emph{SoftWare}, }
+
+@entry{HW, , \emph{HardWare}, }
+
+@entry{IA, , \emph{Inteligencia Artificial}, }
+
+@entry{AI, , \emph{Artificial Intelligence}, }
+
+@entry{CNN, , \emph{Convolutional Neural Network}, Red Neuronal Convolucional}
+
+@entry{MLP, , \emph{MultiLayer Perceptron}, PerceptrÃ³n Multicapa}
+
+@entry{MNIST, , \emph{Modified National Institute of Standards and Technology}, Base de datos Modificada del Instituto Nacional de EstÃ¡ndares y TecnologÃ­a}
+
+@entry{RGB, , \emph{Red Green Blue}, ComposiciÃ³n de color Rojo Verde Azul}
+
+\end{acronym}

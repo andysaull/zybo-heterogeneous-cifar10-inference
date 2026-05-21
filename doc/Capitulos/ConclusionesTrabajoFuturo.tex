@@ -2,54 +2,69 @@
 \label{cap:conclusiones}
 
 El objetivo principal de este trabajo era diseñar y evaluar un sistema heterogéneo sobre la placa
-Digilent Zybo, utilizando el procesador ARM para controlar la aplicación y la FPGA para acelerar
+Digilent Zybo, utilizando el procesador \ac{ARM} para controlar la aplicación y la
+\ac{FPGA} para acelerar
 una tarea de cálculo intensivo. Después del desarrollo realizado, se puede afirmar que este
-objetivo se ha cumplido. El sistema final permite enviar una imagen desde el ARM, transferirla a
-la lógica programable mediante AXI DMA, ejecutar un modelo convolucional generado con hls4ml y
-recuperar los logits de salida para obtener la clase predicha.
+objetivo se ha cumplido. El sistema final permite enviar una imagen desde el \ac{ARM},
+transferirla a
+la lógica programable mediante \ac{AXI} \ac{DMA}, ejecutar un modelo convolucional
+generado con hls4ml y
+recuperar los \textit{logits} de salida para obtener la clase predicha.
 
 El camino hasta llegar a esa versión final no ha sido lineal. La principal dificultad no estuvo
-solo en entrenar un modelo CIFAR-10, sino en conseguir que dicho modelo cupiese realmente en una
+solo en entrenar un modelo \ac{CIFAR}-10, sino en conseguir que dicho modelo cupiese
+realmente en una
 Zynq Z-7010. Muchas configuraciones que parecían razonables desde el punto de vista del número de
-parámetros no eran viables después de pasar por Vivado, especialmente por el uso de LUT y por los
-problemas de empaquetado de slices. Esta parte del trabajo dejó claro que, en una FPGA pequeña, no
+parámetros no eran viables después de pasar por Vivado, especialmente por el uso de
+\ac{LUT} y por los
+problemas de empaquetado de \textit{slices}. Esta parte del trabajo dejó claro que, en
+una \ac{FPGA} pequeña, no
 basta con hablar de tamaño del modelo: la forma en que las operaciones se sintetizan y se colocan
 en el dispositivo es igual de importante.
 
 \section{Cumplimiento de objetivos}
 
 La primera parte del proyecto permitió poner en marcha la plataforma y entender el flujo completo
-Vivado/Vitis. Se validó la ejecución bare-metal sobre el ARM, se configuró la comunicación entre
-el sistema de procesamiento y la lógica programable, y se trabajó con AXI-Lite y AXI DMA. Estos
-pasos fueron necesarios para que la parte de inteligencia artificial no quedase aislada como un IP
+Vivado/Vitis. Se validó la ejecución \textit{bare-metal} sobre el \ac{ARM}, se configuró
+la comunicación entre
+el sistema de procesamiento y la lógica programable, y se trabajó con \ac{AXI}-Lite y AXI
+\ac{DMA}. Estos
+pasos fueron necesarios para que la parte de inteligencia artificial no quedase aislada
+como un \ac{IP}
 sin integración real.
 
 La multiplicación de matrices de la fase 3 sirvió como punto intermedio. Fue una prueba más
-controlada que la CNN, pero suficiente para comprobar que Vitis HLS podía generar hardware
-competitivo y que el flujo ARM--DMA--FPGA funcionaba correctamente. Además, la comparación con una
-implementación VHDL ayudó a valorar el uso de HLS con más criterio. La herramienta no elimina la
+controlada que la \ac{CNN}, pero suficiente para comprobar que Vitis \ac{HLS} podía generar hardware
+competitivo y que el flujo \ac{ARM}--\ac{DMA}--\ac{FPGA} funcionaba correctamente.
+Además, la comparación con una
+implementación \ac{VHDL} ayudó a valorar el uso de \ac{HLS} con más criterio. La
+herramienta no elimina la
 necesidad de entender el hardware, pero sí reduce mucho el esfuerzo necesario para llegar a una
 arquitectura paralela funcional.
 
-En la fase 4 se consiguió generar e integrar un modelo CIFAR-10 completo. La precisión del modelo
+En la fase 4 se consiguió generar e integrar un modelo \ac{CIFAR}-10 completo. La
+precisión del modelo
 se tuvo que equilibrar con los recursos disponibles en la Zybo. La versión final no es una red
 grande, ni pretende competir con modelos modernos de visión artificial, pero sí cumple el propósito
-del trabajo: demostrar una inferencia de IA ejecutándose en hardware dedicado dentro de una FPGA de
+del trabajo: demostrar una inferencia de \ac{IA} ejecutándose en hardware dedicado dentro
+de una \ac{FPGA} de
 recursos modestos.
 
 Por último, la fase de evaluación permitió medir el beneficio de la aceleración. La inferencia en
-FPGA obtuvo un tiempo medio cercano a 2 ms, frente a unos 171 ms de la ejecución del core
-\texttt{C++}
-generado por hls4ml en el ARM. Esto supone una mejora aproximada de 85 veces. Más allá del número
+\ac{FPGA} obtuvo un tiempo medio cercano a 2 ms, frente a unos 171 ms de la ejecución del
+core \texttt{C++}
+generado por hls4ml en el \ac{ARM}. Esto supone una mejora aproximada de 85 veces. Más
+allá del número
 exacto, lo relevante es que la aceleración se ha medido sobre la placa real e incluyendo el coste de
-comunicación con el IP.
+comunicación con el \ac{IP}.
 
 \section{Lecciones aprendidas}
 
-Una de las conclusiones más claras del proyecto es que HLS facilita el desarrollo, pero no lo
+Una de las conclusiones más claras del proyecto es que \ac{HLS} facilita el desarrollo, pero no lo
 convierte en automático. Las directivas, los tipos de datos y el factor de reutilización tienen un
 impacto directo en los recursos finales. En varias ocasiones fue necesario volver al modelo,
-modificar su arquitectura o ajustar la cuantización porque el diseño no entraba en la FPGA. En ese
+modificar su arquitectura o ajustar la cuantización porque el diseño no entraba en la
+\ac{FPGA}. En ese
 sentido, el trabajo con hls4ml fue especialmente interesante: acerca mucho el mundo del aprendizaje
 automático al diseño hardware, pero sigue exigiendo leer con cuidado los informes de síntesis,
 utilización y temporización.
@@ -57,10 +72,11 @@ utilización y temporización.
 También ha sido importante distinguir entre los distintos niveles de validación. Al principio,
 cuando la ejecución en placa devolvía resultados incoherentes, era tentador pensar en un fallo del
 modelo. Sin embargo, parte del problema venía de cachés de Vivado/Vitis y de versiones antiguas del
-IP que seguían apareciendo en la integración.
+\ac{IP} que seguían apareciendo en la integración.
 
 Otro punto práctico ha sido la importancia de mantener los proyectos ordenados. En un flujo con
-Vivado, Vitis, Vitis HLS, modelos entrenados, IP generados y scripts auxiliares, es fácil acabar
+Vivado, Vitis, Vitis \ac{HLS}, modelos entrenados, \ac{IP} generados y \textit{scripts}
+auxiliares, es fácil acabar
 con carpetas repetidas o resultados antiguos mezclados con versiones nuevas. La separación entre
 distintas fases y en cada una de ellas una carpeta con un proyecto Vivado/Vitis, hace que sea más
 fácil de mantener y de explicar.
@@ -73,15 +89,17 @@ modelo final tuvo que ser pequeño y muy ajustado en recursos. Esto afecta direc
 precisión que se puede esperar y limita la complejidad de las imágenes que puede clasificar con
 robustez.
 
-Otra limitación es que el benchmark se ha centrado en latencia de inferencia sobre imágenes
+Otra limitación es que el \textit{benchmark} se ha centrado en latencia de inferencia sobre imágenes
 concretas. Para una evaluación más completa sería necesario ejecutar un conjunto amplio de imágenes
 de prueba y obtener métricas como precisión global, matriz de confusión o comportamiento por clase.
 En este trabajo se priorizó cerrar el flujo completo hardware-software y medir la aceleración real
 en placa.
 
-También hay que tener cuidado al interpretar la confianza mostrada por terminal. El IP devuelve
-logits, no probabilidades. La confianza se calcula en la aplicación con una softmax aproximada para
-facilitar la lectura humana de los resultados. Por tanto, la clase predicha y los logits son más
+También hay que tener cuidado al interpretar la confianza mostrada por terminal. El \ac{IP} devuelve
+\textit{logits}, no probabilidades. La confianza se calcula en la aplicación con una
+\textit{softmax} aproximada para
+facilitar la lectura humana de los resultados. Por tanto, la clase predicha y los
+\textit{logits} son más
 importantes que el porcentaje exacto de confianza.
 
 \section{Trabajo futuro}
@@ -90,32 +108,40 @@ Una línea clara de trabajo futuro sería mejorar el modelo manteniendo la restr
 Para ello podrían explorarse técnicas como poda de pesos, cuantización consciente del entrenamiento
 (\textit{quantization aware training}), arquitecturas separables en profundidad o una búsqueda más
 sistemática de anchos de palabra por capa. El objetivo sería aumentar la precisión sin volver a
-superar el límite de LUT y BRAM de la placa
+superar el límite de \ac{LUT} y \ac{BRAM} de la placa
 \citep{han2015deep,howard2017mobilenetsefficientconvolutionalneural}.
 
-También sería interesante estudiar mejor el uso de DSP. En el diseño final el consumo de DSP es
-bajo, mientras que las LUT siguen siendo el recurso más comprometido. Un trabajo futuro podría
-centrarse en forzar de forma más controlada el mapeo de multiplicaciones a DSP, ajustar los anchos
-de dato para favorecer ese mapeo y comparar distintas estrategias HLS. No siempre será posible
-trasladar lógica a DSP, pero merece una exploración más profunda.
+También sería interesante estudiar mejor el uso de \ac{DSP}. En el diseño final el consumo de DSP es
+bajo, mientras que las \ac{LUT} siguen siendo el recurso más comprometido. Un trabajo futuro podría
+centrarse en forzar de forma más controlada el mapeo de multiplicaciones a \ac{DSP},
+ajustar los anchos
+de dato para favorecer ese mapeo y comparar distintas estrategias \ac{HLS}. No siempre será posible
+trasladar lógica a \ac{DSP}, pero merece una exploración más profunda.
 
 Otra mejora natural sería automatizar el flujo de generación. Actualmente el proceso implica
-entrenar el modelo, exportarlo a hls4ml, generar el IP, integrarlo en Vivado, exportar el XSA y
-reconstruir la plataforma de Vitis. Parte de este flujo podría unificarse mediante scripts que
-limpien versiones antiguas, regeneren el IP y dejen preparada una carpeta final reproducible.
+entrenar el modelo, exportarlo a hls4ml, generar el \ac{IP}, integrarlo en Vivado,
+exportar el \ac{XSA} y
+reconstruir la plataforma de Vitis. Parte de este flujo podría unificarse mediante
+\textit{scripts} que
+limpien versiones antiguas, regeneren el \ac{IP} y dejen preparada una carpeta final reproducible.
 Esto reduciría errores de caché o de rutas, que han sido una fuente real de problemas durante el
 proyecto.
 
 Desde el punto de vista de la evaluación, el siguiente paso sería probar muchas más imágenes y no
-solo casos individuales. Una aplicación que lea imágenes desde una tarjeta SD, o incluso desde una
+solo casos individuales. Una aplicación que lea imágenes desde una tarjeta \ac{SD}, o
+incluso desde una
 cámara, permitiría evaluar el sistema de forma más parecida a un caso de uso real. También sería
-interesante medir consumo energético, ya que una de las razones de usar FPGA en Edge-AI no es solo
+interesante medir consumo energético, ya que una de las razones de usar \ac{FPGA} en
+\textit{Edge-AI} no es solo
 la latencia, sino la eficiencia energética \citep{sze2017efficientprocessingdeepneural}.
 
-Por último, se podría comparar el acelerador FPGA con una implementación ARM más optimizada, por
+Por último, se podría comparar el acelerador \ac{FPGA} con una implementación \ac{ARM}
+más optimizada, por
 ejemplo usando NEON o librerías pensadas para microcontroladores y procesadores embebidos
 \citep{lai2018cmsisnnefficientneuralnetwork}. Esto
-permitiría situar mejor el resultado frente a una ruta software diseñada específicamente para CPU.
+permitiría situar mejor el resultado frente a una ruta software diseñada específicamente
+para \ac{CPU}.
 Aun así, el trabajo realizado ya muestra la idea principal: cuando el cálculo se adapta al hardware
-y se integra correctamente con el sistema, la FPGA puede reducir de forma notable la latencia de
+y se integra correctamente con el sistema, la \ac{FPGA} puede reducir de forma notable la
+latencia de
 inferencia incluso en una placa de recursos limitados.

@@ -3,68 +3,70 @@
 \addcontentsline{toc}{chapter}{Conclusions and Future Work}
 
 The main objective of this work was to design and evaluate a heterogeneous system on the
-Digilent Zybo board, using the ARM processor to control the application and the FPGA to
+Digilent Zybo board, using the \ac{ARM} processor to control the application and the \ac{FPGA} to
 accelerate a computationally intensive task. After completing the development process,
 it can be stated that this objective has been achieved. The final system is able to send
-an image from the ARM, transfer it to the programmable logic through AXI DMA, execute a
+an image from the \ac{ARM}, transfer it to the programmable logic through \ac{AXI}
+\ac{DMA}, execute a
 convolutional model generated with hls4ml, and retrieve the output logits in order to
 obtain the predicted class.
 
 The path toward this final version was not straightforward. The main difficulty was not
-only training a CIFAR-10 model, but making that model actually fit within a Zynq Z-7010.
+only training a \ac{CIFAR}-10 model, but making that model actually fit within a Zynq Z-7010.
 Many configurations that seemed reasonable in terms of parameter count became unfeasible
-after implementation in Vivado, especially due to LUT usage and slice packing issues.
-This part of the work made it clear that, on a small FPGA, discussing only the model size
+after implementation in Vivado, especially due to \ac{LUT} usage and slice packing issues.
+This part of the work made it clear that, on a small \ac{FPGA}, discussing only the model size
 is not enough: the way operations are synthesized and placed on the device is just as
 important.
 
 \section*{Achievement of the objectives}
 \addcontentsline{toc}{section}{Achievement of the objectives}
 The first part of the project made it possible to bring up the platform and understand
-the complete Vivado/Vitis workflow. Bare-metal execution on the ARM was validated, the
+the complete Vivado/Vitis workflow. Bare-metal execution on the \ac{ARM} was validated, the
 communication between the Processing System and the Programmable Logic was configured,
-and AXI-Lite and AXI DMA were used. These steps were necessary to ensure that the
-artificial intelligence component was not left as an isolated IP block without real
+and \ac{AXI}-Lite and AXI \ac{DMA} were used. These steps were necessary to ensure that the
+artificial intelligence component was not left as an isolated \ac{IP} block without real
 system-level integration.
 
 The matrix multiplication developed in Phase 3 served as an intermediate milestone. It
-was a more controlled test case than the CNN, but still sufficient to verify that Vitis
-HLS could generate competitive hardware and that the ARM--DMA--FPGA data path worked
-correctly. In addition, the comparison with a VHDL implementation helped assess the use
-of HLS from a more informed perspective. The tool does not remove the need to understand
+was a more controlled test case than the \ac{CNN}, but still sufficient to verify that Vitis
+\ac{HLS} could generate competitive hardware and that the \ac{ARM}--\ac{DMA}--\ac{FPGA}
+data path worked
+correctly. In addition, the comparison with a \ac{VHDL} implementation helped assess the use
+of \ac{HLS} from a more informed perspective. The tool does not remove the need to understand
 the underlying hardware, but it does significantly reduce the effort required to reach a
 functional parallel architecture.
 
-In Phase 4, a complete CIFAR-10 model was successfully generated and integrated. The
+In Phase 4, a complete \ac{CIFAR}-10 model was successfully generated and integrated. The
 accuracy of the model had to be balanced against the resources available on the Zybo.
 The final version is not a large network, nor is it intended to compete with modern
 computer vision models, but it does fulfill the purpose of this work: demonstrating AI
-inference running on dedicated hardware inside a resource-constrained FPGA.
+inference running on dedicated hardware inside a resource-constrained \ac{FPGA}.
 
 Finally, the evaluation phase made it possible to measure the benefit of the
-acceleration. FPGA inference achieved an average execution time close to 2 ms, compared
-with approximately 171 ms for the hls4ml-generated \texttt{C++} core running on the ARM. This
+acceleration. \ac{FPGA} inference achieved an average execution time close to 2 ms, compared
+with approximately 171 ms for the hls4ml-generated \texttt{C++} core running on the \ac{ARM}. This
 represents an approximate speedup of 85 times. Beyond the exact numerical value, the
 important point is that the acceleration was measured on the real board and includes the
-communication cost with the IP core.
+communication cost with the \ac{IP} core.
 
 \section*{Lessons learned}
 \addcontentsline{toc}{section}{Lessons learned}
-One of the clearest conclusions of the project is that HLS simplifies development, but
+One of the clearest conclusions of the project is that \ac{HLS} simplifies development, but
 does not make it automatic. Directives, data types, and the reuse factor have a direct
 impact on the final resource usage. On several occasions, it was necessary to go back to
 the model, modify its architecture, or adjust the quantization because the design did not
-fit on the FPGA. In this regard, working with hls4ml was particularly interesting: it
+fit on the \ac{FPGA}. In this regard, working with hls4ml was particularly interesting: it
 brings the machine learning workflow much closer to hardware design, but it still
 requires careful analysis of the synthesis, utilization, and timing reports.
 
 It was also important to distinguish between the different validation levels. At first,
 when the execution on the board produced inconsistent results, it was tempting to assume
 that the model itself was faulty. However, part of the problem came from Vivado/Vitis
-cache issues and older versions of the IP that were still being used during integration.
+cache issues and older versions of the \ac{IP} that were still being used during integration.
 
 Another practical lesson was the importance of keeping projects well organized. In a
-workflow involving Vivado, Vitis, Vitis HLS, trained models, generated IP cores, and
+workflow involving Vivado, Vitis, Vitis \ac{HLS}, trained models, generated \ac{IP} cores, and
 auxiliary scripts, it is easy to end up with duplicated folders or old results mixed
 with newer versions. Separating the project into different phases, each with its own
 Vivado/Vitis project folder, makes the work easier to maintain and explain.
@@ -84,7 +86,7 @@ work, the priority was to close the full hardware-software workflow and measure 
 acceleration achieved on the board.
 
 Care must also be taken when interpreting the confidence value displayed in the
-terminal. The IP core returns logits, not probabilities. The confidence value is
+terminal. The \ac{IP} core returns logits, not probabilities. The confidence value is
 computed in the application using an approximate softmax in order to make the results
 easier to read. Therefore, the predicted class and the logits are more relevant than the
 exact confidence percentage.
@@ -95,35 +97,35 @@ A clear line of future work would be to improve the model while preserving the r
 constraints. Techniques such as weight pruning, quantization-aware training,
 depthwise separable architectures, or a more systematic search for layer-specific word
 lengths could be explored. The goal would be to increase accuracy without exceeding the
-LUT and BRAM limits of the board
+\ac{LUT} and \ac{BRAM} limits of the board
 \citep{han2015deep,howard2017mobilenetsefficientconvolutionalneural}.
 
-It would also be interesting to study DSP usage in more detail. In the final design, DSP
-utilization is low, while LUT remain the most critical resource. Future work could
-focus on enforcing a more controlled mapping of multiplications to DSP blocks, adjusting
-data widths to favor that mapping, and comparing different HLS strategies. It will not
-always be possible to move logic into DSP blocks, but this aspect deserves a deeper
+It would also be interesting to study \ac{DSP} usage in more detail. In the final design, DSP
+utilization is low, while \ac{LUT} remain the most critical resource. Future work could
+focus on enforcing a more controlled mapping of multiplications to \ac{DSP} blocks, adjusting
+data widths to favor that mapping, and comparing different \ac{HLS} strategies. It will not
+always be possible to move logic into \ac{DSP} blocks, but this aspect deserves a deeper
 exploration.
 
 Another natural improvement would be to automate the generation flow. At present, the
-process involves training the model, exporting it to hls4ml, generating the IP,
-integrating it into Vivado, exporting the XSA, and rebuilding the Vitis platform. Part
+process involves training the model, exporting it to hls4ml, generating the \ac{IP},
+integrating it into Vivado, exporting the \ac{XSA}, and rebuilding the Vitis platform. Part
 of this flow could be unified through scripts that clean older versions, regenerate the
-IP, and prepare a final reproducible folder. This would reduce cache- and path-related
+\ac{IP}, and prepare a final reproducible folder. This would reduce cache- and path-related
 errors, which were a real source of problems during the project.
 
 From an evaluation perspective, the next step would be to test many more images instead
-of only individual cases. An application capable of reading images from an SD card, or
+of only individual cases. An application capable of reading images from an \ac{SD} card, or
 even from a camera, would make it possible to evaluate the system in a way that more
 closely resembles a real use case. It would also be interesting to measure energy
-consumption, since one of the reasons for using FPGA in Edge AI is not only latency,
+consumption, since one of the reasons for using \ac{FPGA} in Edge AI is not only latency,
 but also energy efficiency \citep{sze2017efficientprocessingdeepneural}.
 
-Finally, the FPGA accelerator could be compared against a more optimized ARM
+Finally, the \ac{FPGA} accelerator could be compared against a more optimized \ac{ARM}
 implementation, for example using NEON or libraries designed for microcontrollers and
 embedded processors \citep{lai2018cmsisnnefficientneuralnetwork}. This would make it
 possible to better position the result against a software path specifically optimized
-for CPU execution. Even so, the work carried out already demonstrates the main idea:
+for \ac{CPU} execution. Even so, the work carried out already demonstrates the main idea:
 when the computation is adapted to the hardware and properly integrated into the system,
-the FPGA can significantly reduce inference latency even on a resource-constrained
+the \ac{FPGA} can significantly reduce inference latency even on a resource-constrained
 board.

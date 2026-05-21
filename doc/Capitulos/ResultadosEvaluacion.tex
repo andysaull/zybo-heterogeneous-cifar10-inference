@@ -7,97 +7,110 @@ proyecto. No se pretende repetir aquí todo el proceso de desarrollo, descrito e
 resultados cumplen los objetivos planteados al inicio del trabajo.
 
 En primer lugar, se comparan los recursos hardware
-utilizados por una misma operación implementada mediante HLS y mediante VHDL. Después se analiza el
-encaje del acelerador CIFAR-10 dentro de la Zybo Z-7010. Por último, se estudia el tiempo de
-inferencia obtenido en FPGA frente a la ejecución del core \texttt{C++} generado por
-hls4ml en el ARM.
+utilizados por una misma operación implementada mediante \ac{HLS} y mediante \ac{VHDL}.
+Después se analiza el
+encaje del acelerador \ac{CIFAR}-10 dentro de la Zybo Z-7010. Por último, se estudia el tiempo de
+inferencia obtenido en \ac{FPGA} frente a la ejecución del \textit{core} \texttt{C++}
+generado por hls4ml en el \ac{ARM}.
 
 \section{Comparación de recursos entre HLS y VHDL}
 
-Antes de abordar el modelo CIFAR-10 completo, se utilizó la multiplicación de matrices de la fase 3
+Antes de abordar el modelo \ac{CIFAR}-10 completo, se utilizó la multiplicación de
+matrices de la fase 3
 como prueba controlada. Esta prueba era más sencilla que la red neuronal, pero ya permitía estudiar
-una cuestión importante: si Vitis HLS generaba hardware razonable frente a una descripción manual
-en VHDL.
+una cuestión importante: si Vitis \ac{HLS} generaba hardware razonable frente a una
+descripción manual
+en \ac{VHDL}.
 
-Los recursos obtenidos para ambas implementaciones se muestran en la siguiente tabla:
+Los recursos obtenidos para ambas implementaciones se muestran en la
+tabla~\ref{tab:recursosMatricesHlsVhdl}.
 
 \begin{table}[h!]
   \centering
   \begin{tabular}{|l|r|r|r|r|}
     \hline
-    \textbf{Diseño} & \textbf{LUT} & \textbf{FF} & \textbf{BRAM} & \textbf{DSP} \\ \hline
-    \textbf{VHDL} & 8263 & 4363 & 35 & 72 \\ \hline
-    \textbf{HLS}  & 7723 & 6894 & 32 & 72 \\ \hline
+    \textbf{Diseño} & \textbf{\ac{LUT}} & \textbf{FF} & \textbf{\ac{BRAM}} &
+    \textbf{\ac{DSP}} \\ \hline
+    \textbf{\ac{VHDL}} & 8263 & 4363 & 35 & 72 \\ \hline
+    \textbf{\ac{HLS}}  & 7723 & 6894 & 32 & 72 \\ \hline
   \end{tabular}
   \caption{Comparación de recursos entre la multiplicación de matrices en VHDL y en HLS}
   \label{tab:recursosMatricesHlsVhdl}
 \end{table}
 
-Ambas versiones utilizan 72 DSP, esto era esperable, ya que las dos
+Ambas versiones utilizan 72 \ac{DSP}, esto era esperable, ya que las dos
 implementaciones explotan el mismo tipo de paralelismo en la parte aritmética, pero nos asegura
 que ambas soluciones están alineadas. La diferencia está
-en cómo se organiza el resto del circuito. La versión generada con HLS usa 540 LUT menos y 3 BRAM
-menos que la versión VHDL, pero a cambio utiliza 2531 FF más.
+en cómo se organiza el resto del circuito. La versión generada con \ac{HLS} usa 540
+\ac{LUT} menos y 3 \ac{BRAM}
+menos que la versión \ac{VHDL}, pero a cambio utiliza 2531 \ac{FF} más.
 
-Este resultado fue útil por dos motivos. Primero, porque confirmó que HLS no estaba generando una
+Este resultado fue útil por dos motivos. Primero, porque confirmó que \ac{HLS} no estaba
+generando una
 implementación desproporcionada en área. Segundo, porque mostró una de las ventajas prácticas de la
 herramienta: el reparto entre memoria, registros y lógica de control se consigue con menos esfuerzo
 manual.
 
-Durante el desarrollo de la versión VHDL apareció una primera implementación en la que no
-se inferían correctamente las BRAM y el uso de LUT se disparaba. En HLS este tipo de decisiones
+Durante el desarrollo de la versión \ac{VHDL} apareció una primera implementación en la que no
+se inferían correctamente las \ac{BRAM} y el uso de \ac{LUT} se disparaba. En \ac{HLS}
+este tipo de decisiones
 quedan más guiadas por la herramienta, lo cual no elimina la necesidad de revisar informes, pero sí
 reduce mucho el coste de llegar a una primera versión funcional.
 
 \section{Utilización de recursos del acelerador CIFAR-10}
 
-El resultado más delicado del proyecto fue conseguir que el modelo CIFAR-10 entrase en la Zybo
-Legacy. La Zynq Z-7010 integra una FPGA pequeña para implementar una red convolucional,
-por lo que el
-diseño estuvo limitado principalmente por el número de LUT disponibles. A lo largo del desarrollo
+El resultado más delicado del proyecto fue conseguir que el modelo \ac{CIFAR}-10 entrase en la Zybo
+Legacy. La Zynq Z-7010 integra una \ac{FPGA} pequeña para implementar una red
+convolucional, por lo que el
+diseño estuvo limitado principalmente por el número de \ac{LUT} disponibles. A lo largo
+del desarrollo
 se probaron varias configuraciones de modelo y de cuantización hasta encontrar una versión que
 Vivado pudiera colocar y rutear correctamente.
 
-La versión final utilizada en placa fue el IP generado a partir del modelo:
+La versión final utilizada en placa fue el \ac{IP} generado a partir del modelo:
 
 \texttt{v4\_8\_14\_32\_24\_final}
 
 Tras integrarlo en Vivado, el diseño completo obtuvo la
-utilización mostrada en la siguiente tabla:
+utilización mostrada en la tabla~\ref{tab:recursosCifar10Final}.
 
 \begin{table}[h!]
   \centering
   \begin{tabular}{|l|r|r|}
     \hline
     \textbf{Recurso} & \textbf{Uso en el diseño final} & \textbf{Porcentaje de uso} \\ \hline
-    LUT &   16117 & 91.57\% \\ \hline
-    FF &    17917 & 50.90\% \\ \hline
-    BRAM &  37,5  & 62.50\% \\ \hline
-    DSP &   6     & 7.50\%  \\ \hline
+    \ac{LUT} &   16117 & 91.57\% \\ \hline
+    \ac{FF} &    17917 & 50.90\% \\ \hline
+    \ac{BRAM} &  37,5  & 62.50\% \\ \hline
+    \ac{DSP} &   6     & 7.50\%  \\ \hline
   \end{tabular}
   \caption{Utilización de recursos del diseño CIFAR-10 final en la Zybo}
   \label{tab:recursosCifar10Final}
 \end{table}
 
-El diseño queda cerca del límite de LUT, pero entra en la placa. Esto es importante porque varias
-versiones anteriores fallaban en Vivado con errores de sobreutilización o de empaquetado de slices.
-En cambio, los FF no llegaron a ser el recurso crítico y el uso de BRAM se mantuvo dentro de lo
+El diseño queda cerca del límite de \ac{LUT}, pero entra en la placa. Esto es importante
+porque varias
+versiones anteriores fallaban en Vivado con errores de sobreutilización o de empaquetado
+de \textit{slices}.
+En cambio, los \ac{FF} no llegaron a ser el recurso crítico y el uso de \ac{BRAM} se
+mantuvo dentro de lo
 admisible para la placa.
 
-Un aspecto llamativo es el bajo uso de DSP
+Un aspecto llamativo es el bajo uso de \ac{DSP}
 \citep{amdVitisHLS}. Durante el proyecto se intentó aumentar su utilización
 para descargar lógica combinacional, pero no siempre es posible trasladar automáticamente el coste
-de LUT a DSP. La decisión depende de los tipos de datos, de los anchos de palabra, de las
-directivas HLS, del factor de reutilización y de cómo Vivado termina mapeando las operaciones. En
+de \ac{LUT} a \ac{DSP}. La decisión depende de los tipos de datos, de los anchos de palabra, de las
+directivas \ac{HLS}, del factor de reutilización y de cómo Vivado termina mapeando las
+operaciones. En
 este caso, el límite real lo marcó la lógica auxiliar y de control asociada a la red, no solo las
 multiplicaciones.
 
 \section{Validación funcional de la inferencia}
 
-Una vez generado el bitstream, se realizaron pruebas con varias imágenes de prueba.
+Una vez generado el \textit{bitstream}, se realizaron pruebas con varias imágenes de prueba.
 
-La primera ejecución se hizo sobre imágenes de test que entrega el propio dataset
-de CIFAR-10, las cuales se han tenido que transformar al formato Q16.16 normalizado.
+La primera ejecución se hizo sobre imágenes de test que entrega el propio \textit{dataset}
+de \ac{CIFAR}-10, las cuales se han tenido que transformar al formato Q16.16 normalizado.
 
 La ejecución sobre todas estas imágenes ha sido la siguiente:
 
@@ -169,16 +182,18 @@ precisión y memoria hace viable la inferencia en hardware pequeño, pero puede 
 entre clases cuando el modelo no tiene demasiada capacidad \citep{Jacob_2018_CVPR}.
 
 Hay clases que el modelo reconoce con mucha seguridad, esto nos indica que hay patrones aprendidos
-que se conservan correctamente en la FPGA.
+que se conservan correctamente en la \ac{FPGA}.
 
 Aun así, esta prueba no es decisiva para validar la precisión global del modelo porque son solo
-10 imágenes. CIFAR-10 incluye 60.000 imágenes de 32x32 píxeles repartidas en 10 clases, con 50.000
+10 imágenes. \ac{CIFAR}-10 incluye 60.000 imágenes de 32x32 píxeles repartidas en 10
+clases, con 50.000
 imágenes de entrenamiento y 10.000 imágenes de test \citep{cifar10Dataset}. Por tanto, una
 validación completa debería ejecutar el conjunto de test, o al menos una muestra mucho más amplia y
 balanceada por clase. Esa evaluación queda fuera del alcance de este trabajo, donde se ha priorizado
 cerrar el flujo completo de inferencia en placa.
 
-Además de la prueba con imágenes sacadas del dataset, se ha podido probar la inferencia sobre
+Además de la prueba con imágenes sacadas del \textit{dataset}, se ha podido probar la
+inferencia sobre
 diferentes imágenes descargadas de internet transformándolas mediante la herramienta
 \texttt{image\_file\_to\_h.py}.
 Teniendo en cuenta que la imagen se debe redimensionar a 32x32 píxeles, si queremos obtener una
@@ -188,26 +203,28 @@ ningún otro objeto en la imagen.
 
 \section{Benchmark de inferencia}
 
-El objetivo principal de rendimiento era comprobar si la FPGA reducía la latencia de la inferencia
-frente a una ejecución software en el ARM Cortex-A9. Para ello se midieron varias ejecuciones sobre
+El objetivo principal de rendimiento era comprobar si la \ac{FPGA} reducía la latencia de
+la inferencia
+frente a una ejecución software en el \ac{ARM} Cortex-A9. Para ello se midieron varias
+ejecuciones sobre
 la misma imagen y con el mismo temporizador hardware de la plataforma. En esta comparación se usó
-el mismo modelo generado por hls4ml en dos caminos distintos: por un lado, el IP sintetizado e
-integrado en la FPGA. Por el otro, el core \texttt{C++} generado por hls4ml ejecutado
-directamente sobre el
-ARM \citep{hls4mlDocs}.
+el mismo modelo generado por hls4ml en dos caminos distintos: por un lado, el \ac{IP} sintetizado e
+integrado en la \ac{FPGA}. Por el otro, el \textit{core} \texttt{C++} generado por hls4ml
+ejecutado directamente sobre el
+\ac{ARM} \citep{hls4mlDocs}.
 
-La siguiente tabla muestra los tiempos obtenidos:
+La tabla~\ref{tab:benchmarkCifar10FpgaArm} muestra los tiempos obtenidos.
 
 \begin{table}[h!]
 \centering
 \begin{tabular}{|l|r|r|}
 \hline
 \textbf{Ruta de inferencia} & \textbf{Tiempo medio} & \textbf{Mejor tiempo} \\ \hline
-FPGA & 2012 $\mu$s & 2008 $\mu$s \\ \hline
-CPU (ARM) & 171215 $\mu$s & 171161 $\mu$s \\ \hline
+\ac{FPGA} & 2012 $\mu$s & 2008 $\mu$s \\ \hline
+\ac{CPU} (\ac{ARM}) & 171215 $\mu$s & 171161 $\mu$s \\ \hline
 \end{tabular}
-\caption{Benchmark de inferencia CIFAR-10 entre acelerador FPGA y core \texttt{C++} de
-hls4ml en ARM}
+\caption{Benchmark de inferencia CIFAR-10 entre acelerador FPGA y \textit{core}
+\texttt{C++} de hls4ml en ARM}
 \label{tab:benchmarkCifar10FpgaArm}
 \end{table}
 
@@ -217,105 +234,138 @@ Con estos datos, la aceleración media observada es:
 \mathrm{speedup} = \frac{171215}{2012} \approx 85.09
 \end{equation}
 
-Es decir, la inferencia acelerada en FPGA fue aproximadamente 85 veces más rápida que la ejecución
-del core \texttt{C++} de hls4ml en el ARM. Este resultado es coherente con la naturaleza
-de cada ruta. En la
-FPGA, el modelo se convierte en hardware dedicado y puede explotar paralelismo a nivel de
-operaciones y de flujo de datos. En cambio, en el ARM se ejecuta una descripción
+Es decir, la inferencia acelerada en \ac{FPGA} fue aproximadamente 85 veces más rápida
+que la ejecución
+del \textit{core} \texttt{C++} de hls4ml en el \ac{ARM}. Este resultado es coherente con
+la naturaleza de cada ruta. En la
+\ac{FPGA}, el modelo se convierte en hardware dedicado y puede explotar paralelismo a nivel de
+operaciones y de flujo de datos. En cambio, en el \ac{ARM} se ejecuta una descripción
 \texttt{C++} pensada para
-ser sintetizada por HLS, no una librería de inferencia optimizada para CPU
+ser sintetizada por \ac{HLS}, no una librería de inferencia optimizada para \ac{CPU}
 \citep{sze2017efficientprocessingdeepneural}.
 
-Es importante destacar que el tiempo de la ruta FPGA incluye el uso real del sistema: preparación
-del buffer de salida, coherencia de caché, transferencia DMA, ejecución del IP HLS y lectura de los
+Es importante destacar que el tiempo de la ruta \ac{FPGA} incluye el uso real del
+sistema: preparación
+del \textit{buffer} de salida, coherencia de caché, transferencia \ac{DMA}, ejecución del
+\ac{IP} \ac{HLS} y lectura de los
 resultados. Por tanto, no se está midiendo únicamente el núcleo matemático del acelerador, sino la
-inferencia completa desde el punto de vista de la aplicación bare-metal. Aun incluyendo este coste
+inferencia completa desde el punto de vista de la aplicación \textit{bare-metal}. Aun
+incluyendo este coste
 de comunicación, el tiempo se mantiene alrededor de los 2 ms.
 
-La ruta ARM, por su parte, queda penalizada por varios motivos. El core generado por hls4ml utiliza
-tipos de dato de precisión fija, estructuras tipo \texttt{hls::stream} y plantillas
+La ruta \ac{ARM}, por su parte, queda penalizada por varios motivos. El \textit{core}
+generado por hls4ml utiliza
+tipos de dato de precisión fija, estructuras tipo \texttt{\ac{HLS}::stream} y plantillas
 \texttt{C++} orientadas a
 describir hardware. Todas estas construcciones tienen sentido cuando el código se va a transformar
 en un circuito, pero no son la forma más eficiente de ejecutar una red neuronal en un Cortex-A9.
 Por esta razón, el resultado no debe interpretarse como una comparación contra la mejor
-implementación posible en CPU, sino como una comparación entre el acelerador hardware y la
+implementación posible en \ac{CPU}, sino como una comparación entre el acelerador hardware y la
 ejecución software directa del mismo flujo hls4ml.
 
-Si la comparación se realizase con una implementación SW optimizada, el tiempo de ejecución CPU
+Si la comparación se realizase con una implementación \ac{SW} optimizada, el tiempo de
+ejecución \ac{CPU}
 se vería reducido de forma apreciable.
-Podemos intentar deducir la mejora de rendimiento que tendría la ejecución SW tomando como
+Podemos intentar deducir la mejora de rendimiento que tendría la ejecución \ac{SW} tomando como
 referencia \citep{lai2018cmsisnnefficientneuralnetwork}, donde muestran una mejora de rendimiento
-de hasta 4.6 veces utilizando un kernel CMSIS-NN \citep{cmsisnnRepo} en una CNN entrenada
-en el dataset CIFAR-10, de la misma manera que se hace en este trabajo.
+de hasta 4.6 veces utilizando un kernel CMSIS-NN \citep{cmsisnnRepo} en una \ac{CNN} entrenada
+en el \textit{dataset} \ac{CIFAR}-10, de la misma manera que se hace en este trabajo.
 Estos resultados no pueden trasladarse de manera directa a este proyecto, ya que el procesador y
 la arquitectura del modelo son distintos.
-Sin embargo, sí permiten estimar hasta qué punto es la mejora de una implementación SW optimizada
+Sin embargo, sí permiten estimar hasta qué punto es la mejora de una implementación
+\ac{SW} optimizada
 para un caso de ejecución similar.
-Extrapolando esos datos, el tiempo de ejecución de nuestra inferencia en SW pasaría a
+Extrapolando esos datos, el tiempo de ejecución de nuestra inferencia en \ac{SW} pasaría a
 ser de aproximadamente 37000$\mu$s, todavía por encima de los aproximadamente 2000$\mu$s medidos
-en la FPGA, que resultaría en una mejora de rendimiento de aproximadamente 18.5 veces.
+en la \ac{FPGA}, que resultaría en una mejora de rendimiento de aproximadamente 18.5 veces.
 Por lo tanto, la implementación hardware seguiría manteniendo una ventaja clara respecto a una
-ejecución en CPU.
+ejecución en \ac{CPU}.
 
-Además del tiempo de ejecución, también se observaron diferencias en los valores de salida. Para
-la imagen de prueba externa de un perro, ambas rutas predijeron correctamente la clase
-\textit{dog}, pero con logits y porcentajes de confianza distintos:
+Además del tiempo de ejecución, también se observaron diferencias en los valores de salida.
 
 \begin{table}[h!]
 \centering
-\begin{tabular}{|l|l|r|r|}
+\begin{tabular}{|l|r|r|r|r|}
 \hline
-\textbf{Ruta} & \textbf{Predicción} & \textbf{Logit dog} & \textbf{Confianza aprox.} \\ \hline
-FPGA & dog & 4.2188 & 91.22\% \\ \hline
-CPU (ARM) & dog & 2.4219 & 48.24\% \\ \hline
+\textbf{Imagen} & \textbf{Pred. FPGA} & \textbf{Conf. FPGA} & \textbf{Pred. ARM} &
+\textbf{Conf. ARM} \\ \hline
+\textbf{Plane} & \textcolor{green!60!black}{Plane} & 71.17\% &
+\textcolor{green!60!black}{Plane} & 51.63\% \\ \hline
+\textbf{Auto}  & \textcolor{green!60!black}{Auto}  & 60.70\% &
+\textcolor{green!60!black}{Auto}  & 46.25\% \\ \hline
+\textbf{Bird}  & \textcolor{red}{Truck} & 30.24\% & \textcolor{green!60!black}{Bird}  &
+47.21\% \\ \hline
+\textbf{Cat}   & \textcolor{green!60!black}{Cat}   & 53.14\% &
+\textcolor{green!60!black}{Cat}   & 42.14\% \\ \hline
+\textbf{Deer}  & \textcolor{green!60!black}{Deer}  & 34.68\% & \textcolor{red}{Plane} &
+30.64\% \\ \hline
+\textbf{Dog}   & \textcolor{red}{Frog}  & 32.13\% & \textcolor{red}{Frog}  & 29.04\% \\ \hline
+\textbf{Frog}  & \textcolor{green!60!black}{Frog}  & 83.11\% &
+\textcolor{green!60!black}{Frog}  & 91.44\% \\ \hline
+\textbf{Horse} & \textcolor{red}{Truck} & 37.13\% & \textcolor{green!60!black}{Horse} &
+65.24\% \\ \hline
+\textbf{Ship}  & \textcolor{red}{Auto}  & 71.26\% & \textcolor{red}{Auto}  & 89.17\% \\ \hline
+\textbf{Truck} & \textcolor{green!60!black}{Truck} & 89.08\% &
+\textcolor{green!60!black}{Truck} & 62.78\% \\ \hline
 \end{tabular}
 \caption{Comparación de salida entre la inferencia en FPGA y la ejecución hls4ml en ARM}
-\label{tab:comparacionFpgaArmHls4ml}
+\label{tab:comparacionFpgaArmCifar10}
 \end{table}
 
-Esta diferencia no invalida el benchmark. La clase final se obtiene con el índice del mayor logit,
-y en este caso ambas rutas llegan a la misma predicción. Lo que cambia es la separación entre la
-clase ganadora y el resto de clases. En la FPGA, el logit de \textit{dog} queda mucho más separado
-del resto, y por eso la softmax aproximada muestra una confianza superior al 90\%. En el ARM, la
-salida sigue clasificando como \textit{dog}, pero la separación con otras clases es menor y la
-confianza baja hasta aproximadamente el 48\%.
+La tabla~\ref{tab:comparacionFpgaArmCifar10} muestra que las dos rutas no producen exactamente
+el mismo comportamiento, aunque parten del mismo modelo entrenado.
+En las 10 imágenes evaluadas, la inferencia en \ac{FPGA} acierta seis casos mientras que la
+ejecución en \ac{ARM} acierta siete.
+Estas diferencias deben interpretarse teniendo en cuenta que el modelo final está muy condicionado
+por los recursos disponibles en la Zynq Z-7010.
 
 Hay que recordar que la confianza mostrada por terminal no es una salida directa del modelo
-hardware. El IP devuelve logits en Q16.16, y la aplicación calcula después una softmax aproximada
-para facilitar la lectura. Por tanto, una diferencia moderada entre logits puede transformarse en
+hardware. El \ac{IP} devuelve \textit{logits} en Q16.16, y la aplicación calcula después
+una \textit{softmax} aproximada
+para facilitar la lectura. Por tanto, una diferencia moderada entre \textit{logits} puede
+transformarse en
 una diferencia grande en el porcentaje final. Este efecto es habitual en clasificadores neuronales:
-la softmax amplifica la distancia relativa entre las puntuaciones \citep{pmlr-v70-guo17a}.
+la \textit{softmax} amplifica la distancia relativa entre las puntuaciones \citep{pmlr-v70-guo17a}.
 
-Las diferencias entre FPGA y ARM también son razonables desde el punto de vista numérico. Aunque
+Las diferencias entre \ac{FPGA} y \ac{ARM} también son razonables desde el punto de vista
+numérico. Aunque
 ambas rutas parten del mismo modelo entrenado, no ejecutan exactamente la misma implementación
-aritmética. La FPGA trabaja con el hardware generado por Vitis HLS, con los anchos de palabra,
-redondeos y comportamientos de desbordamiento definidos durante la síntesis. El ARM, en cambio,
+aritmética. La \ac{FPGA} trabaja con el hardware generado por Vitis \ac{HLS}, con los
+anchos de palabra,
+redondeos y comportamientos de desbordamiento definidos durante la síntesis. El \ac{ARM}, en cambio,
 ejecuta una versión \texttt{C++} del modelo mediante tipos software que emulan precisión
 fija. Pequeñas
 diferencias de redondeo, truncado, orden de acumulación o conversión entre tipos pueden propagarse
-a través de las capas convolucionales y modificar la distancia entre los logits finales.
+a través de las capas convolucionales y modificar la distancia entre los \textit{logits} finales.
 
-Por tanto, la conclusión principal del benchmark es doble. En rendimiento, la FPGA ofrece una
-mejora muy clara frente a ejecutar el core hls4ml en el ARM. En precisión funcional, ambas rutas
-mantienen la misma clase predicha para la imagen evaluada, aunque no producen exactamente los
-mismos logits ni la misma confianza. Esto confirma que la aceleración hardware es efectiva, pero
-también que en un despliegue con cuantización y HLS conviene analizar siempre los logits y no solo
-el porcentaje de confianza impreso por la aplicación.
+Por tanto, la conclusión principal del \textit{benchmark} es doble. En rendimiento, la
+\ac{FPGA} ofrece una
+mejora muy clara frente a ejecutar el \textit{core} hls4ml en el \ac{ARM}. En precisión
+funcional, ambas rutas
+mantienen predicciones similares para las imagenes evaluadas, aunque no producen exactamente los
+mismos \textit{logits} ni la misma confianza.
 
 \section{Valoración global}
 
-Los resultados muestran que el sistema heterogéneo funciona de extremo a extremo: el ARM prepara
-la imagen, la envía a la FPGA mediante AXI DMA, el IP HLS ejecuta la inferencia y la aplicación
-recupera los logits para obtener la clase final. El diseño no se queda en una simulación aislada,
+Los resultados muestran que el sistema heterogéneo funciona de extremo a extremo: el
+\ac{ARM} prepara
+la imagen, la envía a la \ac{FPGA} mediante \ac{AXI} \ac{DMA}, el \ac{IP} \ac{HLS}
+ejecuta la inferencia y la aplicación
+recupera los \textit{logits} para obtener la clase final. El diseño no se queda en una
+simulación aislada,
 sino que se ejecuta sobre la placa real.
 
-La mejora temporal frente a ejecutar el core hls4ml directamente en el ARM es muy clara, aunque no
+La mejora temporal frente a ejecutar el \textit{core} hls4ml directamente en el \ac{ARM}
+es muy clara, aunque no
 debe separarse del contexto de la placa utilizada. La placa Zybo tiene recursos muy ajustados para
-una CNN, por lo que el modelo final tuvo que ser pequeño y cuidadosamente cuantizado. A pesar de
-ello, conseguir una inferencia en torno a 2 ms en la FPGA confirma que el uso de hardware dedicado
+una \ac{CNN}, por lo que el modelo final tuvo que ser pequeño y cuidadosamente
+cuantizado. A pesar de
+ello, conseguir una inferencia en torno a 2 ms en la \ac{FPGA} confirma que el uso de
+hardware dedicado
 es una vía efectiva para reducir latencia en sistemas empotrados.
 
-La evaluación también deja una enseñanza importante: en proyectos HLS no basta con que el modelo
+La evaluación también deja una enseñanza importante: en proyectos \ac{HLS} no basta con
+que el modelo
 sea correcto a nivel de código \texttt{C++}. La versión realmente desplegada es el
 hardware generado, y por
 eso hay que analizar recursos, temporización, comunicación con memoria y comportamiento numérico

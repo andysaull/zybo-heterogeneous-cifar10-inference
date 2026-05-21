@@ -53,6 +53,8 @@
 % puedes consultar config.tex  para más información), entonces metemos
 % en la  tabla de contenidos una  entrada para marcar  la página donde
 % está el índice de palabras.
+\chapter*{\listacronymname}
+\markboth{\listacronymname}{\listacronymname}
 
 \ifx\generatoc\undefined
 \else
@@ -62,7 +64,7 @@
 % Generamos la lista de acrónimos (en realidad el índice asociado a la
 % lista "acr" de GlossTeX)
 
-\printglosstex(acr)
+\input{acronimos}
 
 % Variable local para emacs, para  que encuentre el fichero maestro de
 % compilación y funcionen mejor algunas teclas rápidas de AucTeX
